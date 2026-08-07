@@ -68,5 +68,5 @@ uv run Week1/day1/01_lists.py
 
 ---
 
-Owner - AnishGane
+Owner - AnishGane <br />
 email- [anishgane10@gmail.com](mailto:anishgane10@gmail.com)
