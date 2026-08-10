@@ -49,6 +49,13 @@ uv run Week1/day1/01_lists.py
 | Day 3 | Sets, Tuples, Collections module     | `05_sets.py`, `06_tuples.py`, `07_collections.py`      | [Go to Day3](./Week1/day3/)  |
 | Day 4 | File Handling, API calls, JSON, OOPs | `08_file_handling.py`, `09_api_calls.py`, `10_OOPs.py` | [Go to Day 4](./Week1/day4/) |
 
+## Week2
+
+| Day   | Toics Covered                                            | Files                                                                            | Link                        |
+| ----- | -------------------------------------------------------- | -------------------------------------------------------------------------------- | --------------------------- |
+| Day 1 | First API call to LLM, Temperature experiment            | `01_first_api_call.py`, `02_temperature_experiment.py`                           | [Go to Day1](./Week2/day1/) |
+| Day 2 | System vs User prompt, prompt wording sensitivity, top_p | `03_system_vs_user_prompt.py`, `04_prompt_wording_sensitivity.py`, `05_top_p.py` | [Go to Day2](./Week2/day2/) |
+
 ---
 
 ## Internship Progress

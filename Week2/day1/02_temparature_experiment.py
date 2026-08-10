@@ -16,16 +16,13 @@ GOAL:
 
 import os
 from openai import OpenAI
-from dotenv import load_dotenv
-
-load_dotenv()
+from Week2.config import API_KEY, BASE_URL, MODEL, MAX_TOKENS
 
 client = OpenAI(
-    base_url = "https://openrouter.ai/api/v1",
-    api_key = os.getenv("OPENROUTER_API_KEY")
+    base_url = BASE_URL,
+    api_key = API_KEY
 )
 
-MODEL = "openrouter/free"
 PROMPT = "Write a one-sentence tagline for a coffee shop."
 TEMPERATURES = [0.0, 0.5, 1.0]
 SYSTEM_INSTRUCTION="Answer directly and concisely. Do not show your reasoning or thinking process."
@@ -33,7 +30,7 @@ SYSTEM_INSTRUCTION="Answer directly and concisely. Do not show your reasoning or
 def ask_model(prompt, temperature):
     response = client.chat.completions.create(
         model=MODEL,
-        max_tokens=100,
+        max_tokens=MAX_TOKENS,
         temperature=temperature,
         messages=[
             {
