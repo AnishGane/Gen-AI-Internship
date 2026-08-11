@@ -51,10 +51,11 @@ uv run Week1/day1/01_lists.py
 
 ## Week2
 
-| Day   | Toics Covered                                            | Files                                                                            | Link                        |
-| ----- | -------------------------------------------------------- | -------------------------------------------------------------------------------- | --------------------------- |
-| Day 1 | First API call to LLM, Temperature experiment            | `01_first_api_call.py`, `02_temperature_experiment.py`                           | [Go to Day1](./Week2/day1/) |
-| Day 2 | System vs User prompt, prompt wording sensitivity, top_p | `03_system_vs_user_prompt.py`, `04_prompt_wording_sensitivity.py`, `05_top_p.py` | [Go to Day2](./Week2/day2/) |
+| Day   | Toics Covered                                             | Files                                                                             | Link                        |
+| ----- | --------------------------------------------------------- | --------------------------------------------------------------------------------- | --------------------------- |
+| Day 1 | First API call to LLM, Temperature experiment             | `01_first_api_call.py`, `02_temperature_experiment.py`                            | [Go to Day1](./Week2/day1/) |
+| Day 2 | System vs User prompt, prompt wording sensitivity, top_p  | `03_system_vs_user_prompt.py`, `04_prompt_wording_sensitivity.py`, `05_top_p.py`  | [Go to Day2](./Week2/day2/) |
+| Day 3 | token counting, context window limits, streaming response | `06_token_counting.py`, `07_context_window_limits.py`, `08_streaming_response.py` | [Go to Day3](./Week2/day3/) |
 
 ---
 
