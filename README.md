@@ -57,6 +57,7 @@ uv run Week1/day1/01_lists.py
 | Day 2 | System vs User prompt, prompt wording sensitivity, top_p                      | `03_system_vs_user_prompt.py`, `04_prompt_wording_sensitivity.py`, `05_top_p.py`       | [Go to Day2](./Week2/day2/) |
 | Day 3 | token counting, context window limits, streaming response                     | `06_token_counting.py`, `07_context_window_limits.py`, `08_streaming_response.py`      | [Go to Day3](./Week2/day3/) |
 | Day 4 | Context trimming, multi-turn conversation and handling rate limits and errors | `09_context_trimming.py`, `10_multiturn_conversation.py`, `11_rate_limit_and_error.py` | [Go to Day4](./Week2/day4/) |
+| Day 5 | Zero-shot vs Few-shot, Chain of Thought and Structured JSON Output            | `12_zero_shot_vs_few_shot.py`, `13_chain_of_thought.py`, `14_structured_json.py`       | [Go to Day4](./Week2/day5/) |
 
 ---
 
