@@ -51,20 +51,21 @@ uv run Week1/day1/01_lists.py
 
 ## Week2
 
-| Day   | Toics Covered                                                                 | Files                                                                                  | Link                        |
-| ----- | ----------------------------------------------------------------------------- | -------------------------------------------------------------------------------------- | --------------------------- |
-| Day 1 | First API call to LLM, Temperature experiment                                 | `01_first_api_call.py`, `02_temperature_experiment.py`                                 | [Go to Day1](./Week2/day1/) |
-| Day 2 | System vs User prompt, prompt wording sensitivity, top_p                      | `03_system_vs_user_prompt.py`, `04_prompt_wording_sensitivity.py`, `05_top_p.py`       | [Go to Day2](./Week2/day2/) |
-| Day 3 | token counting, context window limits, streaming response                     | `06_token_counting.py`, `07_context_window_limits.py`, `08_streaming_response.py`      | [Go to Day3](./Week2/day3/) |
-| Day 4 | Context trimming, multi-turn conversation and handling rate limits and errors | `09_context_trimming.py`, `10_multiturn_conversation.py`, `11_rate_limit_and_error.py` | [Go to Day4](./Week2/day4/) |
-| Day 5 | Zero-shot vs Few-shot, Chain of Thought and Structured JSON Output            | `12_zero_shot_vs_few_shot.py`, `13_chain_of_thought.py`, `14_structured_json.py`       | [Go to Day4](./Week2/day5/) |
+| Day   | Toics Covered                                                                       | Files                                                                                  | Link                        |
+| ----- | ----------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------- | --------------------------- |
+| Day 1 | First API call to LLM, Temperature experiment                                       | `01_first_api_call.py`, `02_temperature_experiment.py`                                 | [Go to Day1](./Week2/day1/) |
+| Day 2 | System vs User prompt, prompt wording sensitivity, top_p                            | `03_system_vs_user_prompt.py`, `04_prompt_wording_sensitivity.py`, `05_top_p.py`       | [Go to Day2](./Week2/day2/) |
+| Day 3 | token counting, context window limits, streaming response                           | `06_token_counting.py`, `07_context_window_limits.py`, `08_streaming_response.py`      | [Go to Day3](./Week2/day3/) |
+| Day 4 | Context trimming, multi-turn conversation and handling rate limits and errors       | `09_context_trimming.py`, `10_multiturn_conversation.py`, `11_rate_limit_and_error.py` | [Go to Day4](./Week2/day4/) |
+| Day 5 | Zero-shot vs Few-shot, Chain of Thought and Structured JSON Output                  | `12_zero_shot_vs_few_shot.py`, `13_chain_of_thought.py`, `14_structured_json.py`       | [Go to Day5](./Week2/day5/) |
+| Day 5 | Comparing two different models, building mini chatbot and chatbot with json logging | `15_comparing_models.py`, `16_mini_chatbot.py`, `17_chatbot_with_logging.py`           | [Go to Day6](./Week2/day6/) |
 
 ---
 
 ## Internship Progress
 
 - [x] Week 1
-- [ ] Week 2
+- [x] Week 2
 - [ ] Week 3
 - [ ] Week 4
 - [ ] Week 5
