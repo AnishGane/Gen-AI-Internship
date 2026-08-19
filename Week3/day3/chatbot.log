@@ -1,0 +1,25 @@
+2026-08-19 11:32:32,774 [INFO] Sending request with 2 messages.
+2026-08-19 11:32:51,455 [INFO] Received reply (80 tokens total).
+2026-08-19 11:32:51,455 [INFO] Sending request with 4 messages.
+2026-08-19 11:32:53,351 [INFO] Received reply (99 tokens total).
+2026-08-19 11:32:53,353 [INFO] Sending request with 6 messages.
+2026-08-19 11:33:07,723 [INFO] Received reply (500 tokens total).
+2026-08-19 11:33:07,725 [INFO] History grew to 7 messages -- summarizing 5 older ones.
+2026-08-19 11:33:46,780 [INFO] Sending request with 2 messages.
+2026-08-19 11:33:56,662 [INFO] Received reply (310 tokens total).
+2026-08-19 11:33:56,664 [INFO] Sending request with 4 messages.
+2026-08-19 11:33:57,766 [INFO] Received reply (961 tokens total).
+2026-08-19 11:33:57,913 [INFO] Sending request with 6 messages.
+2026-08-19 11:34:05,041 [INFO] Received reply (452 tokens total).
+2026-08-19 11:34:05,041 [INFO] History grew to 7 messages -- summarizing 5 older ones.
+2026-08-19 11:34:07,323 [INFO] Summary produced: The conversation involved three requests for facts about different topics: oceans, space, and volcanoes. I provided factual information about the ocean covering 71% of Earth's surface with 97% of its water, with the second and third requests remaining unanswered in the provided content.
+2026-08-19 11:34:07,323 [INFO] Sending request with 4 messages.
+2026-08-19 11:34:08,571 [INFO] Received reply (195 tokens total).
+2026-08-19 11:34:08,579 [INFO] Sending request with 6 messages.
+2026-08-19 11:34:16,840 [INFO] Received reply (477 tokens total).
+2026-08-19 11:34:16,852 [INFO] Sending request with 8 messages.
+2026-08-19 11:34:17,935 [INFO] Received reply (304 tokens total).
+2026-08-19 11:34:17,945 [INFO] History grew to 8 messages -- summarizing 6 older ones.
+2026-08-19 11:34:20,474 [INFO] Summary produced: None
+2026-08-19 11:34:20,474 [INFO] Sending request with 5 messages.
+2026-08-19 11:34:22,121 [INFO] Received reply (304 tokens total).

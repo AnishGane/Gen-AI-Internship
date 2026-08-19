@@ -1,0 +1,13 @@
+2026-08-19 12:01:02,197 [DEBUG] Outgoing request: model=openrouter/free, message_count=2
+2026-08-19 12:02:19,678 [INFO] Reply received. total_tokens this call: 291
+2026-08-19 12:02:19,678 [DEBUG] Outgoing request: model=openrouter/free, message_count=4
+2026-08-19 12:02:21,224 [INFO] Reply received. total_tokens this call: 364
+2026-08-19 12:02:21,230 [DEBUG] Outgoing request: model=openrouter/free, message_count=6
+2026-08-19 12:02:23,028 [INFO] Reply received. total_tokens this call: 1504
+2026-08-19 12:02:23,036 [WARNING] Token budget hit (1504 >= 600). Summarizing 5 messages.
+2026-08-19 12:02:25,404 [DEBUG] Outgoing request: model=openrouter/free, message_count=4
+2026-08-19 12:02:29,172 [INFO] Reply received. total_tokens this call: 496
+2026-08-19 12:02:29,380 [WARNING] Approaching token budget: 496/600 tokens used.
+2026-08-19 12:02:29,386 [DEBUG] Outgoing request: model=openrouter/free, message_count=6
+2026-08-19 12:02:37,416 [INFO] Reply received. total_tokens this call: 335
+2026-08-19 12:02:37,418 [INFO] Session ended. Final history length: 7 messages.
