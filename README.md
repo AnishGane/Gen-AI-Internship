@@ -45,7 +45,7 @@ uv run Week1/day1/01_lists.py
 | Day   | Toics Covered                        | Files                                                  | Link                         |
 | ----- | ------------------------------------ | ------------------------------------------------------ | ---------------------------- |
 | Day 1 | List, Dictionaries                   | `01_lists.py`, `02_dict.py`                            | [Go to Day1](./Week1/day1/)  |
-| Day2  | Loops, Functions                     | `03_loops.py`, `04_functions.py`                       | [Go to Day2](./Week1/day2/)  |
+| Day 2 | Loops, Functions                     | `03_loops.py`, `04_functions.py`                       | [Go to Day2](./Week1/day2/)  |
 | Day 3 | Sets, Tuples, Collections module     | `05_sets.py`, `06_tuples.py`, `07_collections.py`      | [Go to Day3](./Week1/day3/)  |
 | Day 4 | File Handling, API calls, JSON, OOPs | `08_file_handling.py`, `09_api_calls.py`, `10_OOPs.py` | [Go to Day 4](./Week1/day4/) |
 
@@ -58,7 +58,17 @@ uv run Week1/day1/01_lists.py
 | Day 3 | token counting, context window limits, streaming response                           | `06_token_counting.py`, `07_context_window_limits.py`, `08_streaming_response.py`      | [Go to Day3](./Week2/day3/) |
 | Day 4 | Context trimming, multi-turn conversation and handling rate limits and errors       | `09_context_trimming.py`, `10_multiturn_conversation.py`, `11_rate_limit_and_error.py` | [Go to Day4](./Week2/day4/) |
 | Day 5 | Zero-shot vs Few-shot, Chain of Thought and Structured JSON Output                  | `12_zero_shot_vs_few_shot.py`, `13_chain_of_thought.py`, `14_structured_json.py`       | [Go to Day5](./Week2/day5/) |
-| Day 5 | Comparing two different models, building mini chatbot and chatbot with json logging | `15_comparing_models.py`, `16_mini_chatbot.py`, `17_chatbot_with_logging.py`           | [Go to Day6](./Week2/day6/) |
+| Day 6 | Comparing two different models, building mini chatbot and chatbot with json logging | `15_comparing_models.py`, `16_mini_chatbot.py`, `17_chatbot_with_logging.py`           | [Go to Day6](./Week2/day6/) |
+
+## Week 3
+
+| Day   | Toics Covered                                                              | Files                                                                               | Link                        |
+| ----- | -------------------------------------------------------------------------- | ----------------------------------------------------------------------------------- | --------------------------- |
+| Day 1 | CLI Chatbot with argument parse                                            | `01_cli_chatbot_w_argparse.py`                                                      | [Go to Day1](./Week3/day1/) |
+| Day 2 | Function / Tools calling and Multi-tool selection                          | `02_function_calling.py`, `03_multi_tool_selection.py`                              | [Go to Day2](./Week3/day2/) |
+| Day 3 | Structured Logging, Conversation Summarization, token-budget Summarization | `04_structured_log_w_conversation_sum.py`, `05_token_budget_summarization_w_log.py` | [Go to Day3](./Week3/day3/) |
+| Day 4 | REPL chatbot with command and argument with session log JSON               | `06_REPL_chatbot_w_cmd.py`, `07_REPL_chatbot_w_arg.py`                              | [Go to Day4](./Week3/day4/) |
+| Day 5 | Test LLM Outputs and test suite and judge LLM Output                       | `08_test_llm_output.py`, `09_test_suite_and_judge.py`                               | [Go to Day5](./Week3/day5/) |
 
 ---
 
