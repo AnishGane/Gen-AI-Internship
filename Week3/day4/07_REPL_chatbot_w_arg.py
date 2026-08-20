@@ -62,7 +62,7 @@ class ChatSession:
         response = client.chat.completions.create(
             model = MODEL,
             max_tokens = MAX_TOKENS,
-            temperature = self.temperature
+            temperature = self.temperature,
             messages = self.history
         )
         reply = response.choices[0].message.content
@@ -74,7 +74,7 @@ class ChatSession:
             print(f"[{msg['role']}] {msg['content']}")
 
     def save(self):
-        timestampe = datetime.now().strftime("%Y%m%d_%H%M%S")
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         filepath = os.path.join(SESSIONS_DIR, f"session_{timestamp}.json")
         with open(filepath, "w") as f:
             json.dump({"system_prompt": self.system_prompt, "history": self.history}, f, indent = 2)

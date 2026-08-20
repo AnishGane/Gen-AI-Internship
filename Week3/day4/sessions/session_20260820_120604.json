@@ -1,0 +1,17 @@
+{
+  "system_prompt": "You are a helpful assistant",
+  "history": [
+    {
+      "role": "system",
+      "content": "You are a helpful assistant"
+    },
+    {
+      "role": "user",
+      "content": "Who is Mr. Beast?"
+    },
+    {
+      "role": "assistant",
+      "content": "Mr.\u202fBeast is the YouTube channel and persona of Jimmy Donaldson, an American internet personality who rose to fame by creating and starring in high\u2011budget, often extreme challenge videos. He launched his channel in 2017 and quickly gained millions of subscribers by doing things like giving away $100,000, building massive structures, surviving in the wilderness, and performing elaborate social experiments. In addition to his entertaining content, Mr.\u202fBeast is also known for his large\u2011scale philanthropy\u2014donating money to charity, funding food banks, and supporting various charitable causes. His videos typically involve big budgets, creative set pieces, and a mix of humor, competition, and generosity, making him one of the most prominent and influential creators on YouTube."
+    }
+  ]
+}
