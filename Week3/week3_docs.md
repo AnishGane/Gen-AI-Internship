@@ -203,27 +203,79 @@ Run: `uv run Week3/day5/09_test_suite_and_judge.py`
 
 ---
 
+## Day6 - Async API Calls
+
+**Concept:** Sequential requests mean total time = sum of every individual request's time. `asyncio` lets you fire multiple requests **concurrently** — while one waits on the network, others proceed — so total time is closer to the slowest single request, not the sum of all.
+
+```python
+async def ask_async(prompt):
+    response = await async_client.chat.completions.create(model=MODEL, messages=[...])
+    return response.choices[0].message.content
+
+results = await asyncio.gather(*(ask_async(p) for p in PROMPTS))
+```
+
+Run: `uv run Week3/day6/010_async_api_call.py`
+
+### Task 2 — Rate-Limited Concurrency & Per-Task Error Handling
+
+**Concept, part 1 — Concurrency needs a cap:** Task 1 fired ALL requests at once — fine for 4 prompts, but scale that to 50 and you'll almost certainly hit a rate limit, since nothing was throttling how many were in flight simultaneously. An `asyncio.Semaphore` lets you say "at most N requests running at the same time" — extra tasks simply wait their turn.
+
+```python
+semaphore = asyncio.Semaphore(MAX_CONCURRENT_REQUESTS)
+
+async def ask_with_limit(prompt, index):
+    async with semaphore:  # blocks here if the cap is already reached
+        ...
+```
+
+**Concept, part 2 — One failure shouldn't kill the whole batch:** By default, `asyncio.gather()` raises the first exception it sees and cancels everything else. Catching errors _inside_ each task (or using `gather(..., return_exceptions=True)`) means one failed/rate-limited request doesn't lose the rest of the batch:
+
+```python
+try:
+    response = await async_client.chat.completions.create(...)
+    return {"success": True, "result": response.choices[0].message.content}
+except RateLimitError:
+    return {"success": False, "error": "rate_limited"}
+```
+
+Run: `uv run Week3/day6/11_rate_limited_concurrency.py`
+
+---
+
 ## Quick Reference Table (Day 1–5)
 
-| Concept                                          | Script                                    |
-| ------------------------------------------------ | ----------------------------------------- |
-| `argparse` CLI + `ChatSession` class             | `01_cli_chatbot.py`                       |
-| Function calling / tool use (single tool)        | `02_function_calling.py`                  |
-| Multi-tool selection + `tool_choice`             | `03_multi_tool_selection.py`              |
-| Logging + summarization (message-count trigger)  | `04_structured_log_w_conversation_sum.py` |
-| Token-budget summarization + log levels/rotation | `05_token_budget_summarization_w_log.py`  |
-| REPL with `/` commands (no arguments)            | `06_REPL_chatbot_w_cmd.py`                |
-| REPL commands with arguments + load/undo         | `07_REPL_chatbot_w_arg.py`                |
-| Testing LLM output properties                    | `08_test_llm_outputs.py`                  |
-| Test suites, pass rates, LLM-as-judge            | `09_test_suite_and_judge.py`              |
+| Concept                                            | Script                                    |
+| -------------------------------------------------- | ----------------------------------------- |
+| `argparse` CLI + `ChatSession` class               | `01_cli_chatbot.py`                       |
+| Function calling / tool use (single tool)          | `02_function_calling.py`                  |
+| Multi-tool selection + `tool_choice`               | `03_multi_tool_selection.py`              |
+| Logging + summarization (message-count trigger)    | `04_structured_log_w_conversation_sum.py` |
+| Token-budget summarization + log levels/rotation   | `05_token_budget_summarization_w_log.py`  |
+| REPL with `/` commands (no arguments)              | `06_REPL_chatbot_w_cmd.py`                |
+| REPL commands with arguments + load/undo           | `07_REPL_chatbot_w_arg.py`                |
+| Testing LLM output properties                      | `08_test_llm_outputs.py`                  |
+| Test suites, pass rates, LLM-as-judge              | `09_test_suite_and_judge.py`              |
+| Async concurrent API calls (basic)                 | `10_async_api_call.py`                    |
+| Rate-limited concurrency + per-task error handling | `11_rate_limited_concurrency.py`          |
 
 ---
 
 ## Deliverable Summary (parameter effects, for submission)
 
-| Parameter       | What it controls                                                 | What I observed |
-| --------------- | ---------------------------------------------------------------- | --------------- |
-| `temperature`   | Randomness of token sampling                                     | _(fill in)_     |
-| `max_tokens`    | Output length cap; triggers `finish_reason: "length"` if too low | _(fill in)_     |
-| `top_p`         | Alternate randomness control via probability-mass cutoff         | _(fill in)_     |
-| `system` prompt | Role/tone/rules for the whole conversation                       | _(fill in)_     |
+| Parameter       | What it controls                                                 |
+| --------------- | ---------------------------------------------------------------- |
+| `temperature`   | Randomness of token sampling                                     |
+| `max_tokens`    | Output length cap; triggers `finish_reason: "length"` if too low |
+| `top_p`         | Alternate randomness control via probability-mass cutoff         |
+| `system` prompt | Role/tone/rules for the whole conversation                       |
+
+---
+
+## Deliverable Addendum — Concurrency
+
+| Aspect                  | What it controls                                            |
+| ----------------------- | ----------------------------------------------------------- |
+| `asyncio.gather()`      | Runs multiple requests concurrently instead of sequentially |
+| `asyncio.Semaphore`     | Caps max simultaneous in-flight requests                    |
+| Per-task error handling | Prevents one failure from cancelling the whole batch        |

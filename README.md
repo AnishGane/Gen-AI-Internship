@@ -69,6 +69,7 @@ uv run Week1/day1/01_lists.py
 | Day 3 | Structured Logging, Conversation Summarization, token-budget Summarization | `04_structured_log_w_conversation_sum.py`, `05_token_budget_summarization_w_log.py` | [Go to Day3](./Week3/day3/) |
 | Day 4 | REPL chatbot with command and argument with session log JSON               | `06_REPL_chatbot_w_cmd.py`, `07_REPL_chatbot_w_arg.py`                              | [Go to Day4](./Week3/day4/) |
 | Day 5 | Test LLM Outputs and test suite and judge LLM Output                       | `08_test_llm_output.py`, `09_test_suite_and_judge.py`                               | [Go to Day5](./Week3/day5/) |
+| Day 6 | Async API Call , Rate Limited Concurrency and per-task error handling      | `10_async_api_call.py`, `11_rate_limited_concurrency.py`                            | [Go to Day5](./Week3/day6/) |
 
 ---
 
@@ -76,7 +77,7 @@ uv run Week1/day1/01_lists.py
 
 - [x] Week 1
 - [x] Week 2
-- [ ] Week 3
+- [x] Week 3
 - [ ] Week 4
 - [ ] Week 5
 - [ ] Week 6
