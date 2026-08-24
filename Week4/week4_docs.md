@@ -55,3 +55,39 @@ class PromptTemplate:
 Run: `uv run Week4/day1/03_prompt_templates.py`
 
 ---
+
+## Day 2 — Structured Output & Validation
+
+### Task 1 — Pydantic Schema Validation
+
+**Concept:** `json.loads()` only confirms text is valid JSON, not that it has the _right shape_. Pydantic validates structure AND types in one step.
+
+```python
+class ProductInfo(BaseModel):
+    name: str
+    price: float
+    in_stock: bool
+
+product = ProductInfo(**json.loads(raw_text))  # raises ValidationError if shape is wrong
+```
+
+Run: `uv run Week4/day2/04_pydantic_validation.py`
+
+### Task 2 — Self-Correcting Retry Loop
+
+**Concept:** Instead of giving up on invalid output, feed the validation error back to the model and ask it to fix its own response.
+
+```python
+except (json.JSONDecodeError, ValidationError) as e:
+    messages.append({"role": "user", "content": f"That response was invalid: {e}. Please correct it."})
+```
+
+Run: `uv run Week4/day2/05_self_correcting_retry.py`
+
+### Task 3 — Entity Extraction from Unstructured Text
+
+**Concept:** A practical structured-output use case — pulling names, dates, and action items out of free-form notes into a defined schema.
+
+Run: `uv run Week4/day2/06_entity_extraction.py`
+
+---
