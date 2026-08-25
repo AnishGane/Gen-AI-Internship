@@ -91,3 +91,26 @@ Run: `uv run Week4/day2/05_self_correcting_retry.py`
 Run: `uv run Week4/day2/06_entity_extraction.py`
 
 ---
+
+## Day 3 — Prompt Engineering Best Practices
+
+### Task 1 — Delimiters & Prompt Injection Awareness
+
+**Concept:** Wrapping user-provided data in clear delimiters (e.g. `<data>` tags) helps the model separate instructions from data — and offers partial (not complete) resistance to injection attempts embedded in that data.
+
+```python
+prompt = f"""Summarize the text between <data> tags...
+<data>
+{user_provided_text}
+</data>"""
+```
+
+Run: `uv run Week4/day3/07_delimiters_and_injection.py`
+
+### Task 2 — Prompt Version Comparison Harness
+
+**Concept:** A repeatable way to compare prompt wording (v1 vs v2) across multiple test inputs using an LLM judge, instead of eyeballing one example.
+
+Run: `uv run Week4/day3/08_prompt_version_comparison.py`
+
+---

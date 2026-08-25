@@ -73,6 +73,16 @@ uv run Week1/day1/01_lists.py
 
 ---
 
+## Week 4
+
+| Day   | Topics Covered                                                            | Files                                                                                     | Link                        |
+| ----- | ------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------- | --------------------------- |
+| Day 1 | Self-consistency, positive/negative examples, reusable prompt templates   | `01_self_consistency.py`, `02_positive_vs_negative_examples.py`, `03_prompt_templates.py` | [Go to Day1](./Week4/day1/) |
+| Day 2 | Pydantic schema validation, self-correcting retry loop, entity extraction | `04_pydantic_validation.py`, `05_self_correcting_retry.py`, `06_entity_extraction.py`     | [Go to Day2](./Week4/day2/) |
+| Day 3 | Delimiters & prompt injection awareness, prompt version comparison        | `07_delimiters_and_injection.py`, `08_prompt_version_comparison.py`                       | [Go to Day3](./Week4/day3/) |
+
+---
+
 ## Internship Progress
 
 - [x] Week 1
