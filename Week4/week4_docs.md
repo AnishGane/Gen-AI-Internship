@@ -114,3 +114,14 @@ Run: `uv run Week4/day3/07_delimiters_and_injection.py`
 Run: `uv run Week4/day3/08_prompt_version_comparison.py`
 
 ---
+
+## Day 4 — Mini Project: Smart Text Toolkit
+
+**What it does:** a CLI tool combining everything from Weeks 1–4: `argparse` (Week 3), prompt structuring (Day 1), Pydantic validation (Day 2), and delimiter-based prompting (Day 3) — three tasks in one tool: summarize, extract key details, classify.
+
+```bash
+uv run .\Week4\day4\09_smart_text_toolkit.py --task summarize --text "..."
+uv run .\Week4\day4\09_smart_text_toolkit.py --task extract --text "..."
+uv run .\Week4\day4\09_smart_text_toolkit.py --task classify --text "..." --categories "Complaint,Question,Praise,Other"
+uv run .\Week4\day4\09_smart_text_toolkit.py --task summarize --file notes.txt
+```
