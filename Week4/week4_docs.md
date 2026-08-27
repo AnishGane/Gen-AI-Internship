@@ -125,3 +125,33 @@ uv run .\Week4\day4\09_smart_text_toolkit.py --task extract --text "..."
 uv run .\Week4\day4\09_smart_text_toolkit.py --task classify --text "..." --categories "Complaint,Question,Praise,Other"
 uv run .\Week4\day4\09_smart_text_toolkit.py --task summarize --file notes.txt
 ```
+
+---
+
+## Day 5 — Testing + Sample I/O + Write-up
+
+### Task 1 — CLI-Level Testing via Subprocess
+
+**Concept:** Tests the tool the way a real user would — running it as an actual subprocess and checking exit codes/output, rather than importing internals directly.
+
+```python
+result = subprocess.run([sys.executable, SCRIPT_PATH] + args, capture_output=True, text=True)
+check("exit code is 0", result.returncode == 0)
+```
+
+Run: `uv run Week4/day5/10_test_toolkit.py`
+
+## Quick Reference Table
+
+| Concept                          | Script                                |
+| -------------------------------- | ------------------------------------- |
+| Self-consistency (majority vote) | `01_self_consistency.py`              |
+| Positive vs. negative examples   | `02_positive_vs_negative_examples.py` |
+| Reusable prompt templates        | `03_prompt_templates.py`              |
+| Pydantic schema validation       | `04_pydantic_validation.py`           |
+| Self-correcting retry loop       | `05_self_correcting_retry.py`         |
+| Entity extraction                | `06_entity_extraction.py`             |
+| Delimiters & injection awareness | `07_delimiters_and_injection.py`      |
+| Prompt version comparison        | `08_prompt_version_comparison.py`     |
+| Mini project (deliverable)       | `09_smart_text_toolkit.py`            |
+| CLI-level testing                | `10_test_toolkit.py`                  |
