@@ -141,17 +141,56 @@ check("exit code is 0", result.returncode == 0)
 
 Run: `uv run Week4/day5/10_test_toolkit.py`
 
+---
+
+## Day 6 — Mini Project 2: Batch Text Processor
+
+**What it does:** a second, larger capstone tying together nearly the entire internship in one pipeline — reads many text entries from a CSV file, classifies each one **concurrently** (with a rate-limit-safe cap), validates each result against a schema, logs progress to a file, and writes all results out to JSON.
+
+Combines: file I/O (Week 1), async + `Semaphore` concurrency (Week 3, Day 6), structured logging (Week 3, Day 3), Pydantic validation (Week 4, Day 2), and `argparse` CLI design (Week 3, Day 1).
+
+```bash
+uv run Week4/day6/batch_text_processor.py --input sample_feedback.csv --output results.json --categories "Bug Report,Feature Request,Praise,Other"
+```
+
+Input CSV needs a column named `text` (see `sample_feedback.csv`).
+
+### Real bug hit while testing this (worth keeping as a documented lesson)
+
+Running this against `openrouter/free` produced a crash partway through the batch:
+
+```
+TypeError: the JSON object must be str, bytes or bytearray, not NoneType
+```
+
+**Root cause:** the auto-router sent one request to an underlying model that returned **no content at all** — `response.choices[0].message.content` came back `None` instead of text (the same "reasoning model burns its token budget and never answers" issue seen throughout Weeks 2 and 3). `json.loads(None)` then crashed the whole batch instead of failing just that one row.
+
+**Fix:** check for `None` before parsing, and treat it as a normal, loggable failure — not a crash:
+
+```python
+raw_text = response.choices[0].message.content
+
+if not raw_text:
+    logger.warning(f"[{index}] Empty response from model (likely a reasoning model that produced no final answer).")
+    return {"index": index, "text": text, "success": False, "error": "empty_response"}
+
+parsed = Classification(**json.loads(raw_text))
+```
+
+This is exactly why per-task error handling (Week 3, Day 6) matters in practice: one bad row now shows up as a clean `"error": "empty_response"` entry in `results.json`, while the other 5 rows still succeed — instead of the entire batch job dying on one unlucky API response.
+
 ## Quick Reference Table
 
-| Concept                          | Script                                |
-| -------------------------------- | ------------------------------------- |
-| Self-consistency (majority vote) | `01_self_consistency.py`              |
-| Positive vs. negative examples   | `02_positive_vs_negative_examples.py` |
-| Reusable prompt templates        | `03_prompt_templates.py`              |
-| Pydantic schema validation       | `04_pydantic_validation.py`           |
-| Self-correcting retry loop       | `05_self_correcting_retry.py`         |
-| Entity extraction                | `06_entity_extraction.py`             |
-| Delimiters & injection awareness | `07_delimiters_and_injection.py`      |
-| Prompt version comparison        | `08_prompt_version_comparison.py`     |
-| Mini project (deliverable)       | `09_smart_text_toolkit.py`            |
-| CLI-level testing                | `10_test_toolkit.py`                  |
+| Concept                                                        | Script                                |
+| -------------------------------------------------------------- | ------------------------------------- |
+| Self-consistency (majority vote)                               | `01_self_consistency.py`              |
+| Positive vs. negative examples                                 | `02_positive_vs_negative_examples.py` |
+| Reusable prompt templates                                      | `03_prompt_templates.py`              |
+| Pydantic schema validation                                     | `04_pydantic_validation.py`           |
+| Self-correcting retry loop                                     | `05_self_correcting_retry.py`         |
+| Entity extraction                                              | `06_entity_extraction.py`             |
+| Delimiters & injection awareness                               | `07_delimiters_and_injection.py`      |
+| Prompt version comparison                                      | `08_prompt_version_comparison.py`     |
+| Mini project (deliverable)                                     | `09_smart_text_toolkit.py`            |
+| CLI-level testing                                              | `10_test_toolkit.py`                  |
+| Mini project 2: batch processor (async + logging + validation) | `batch_text_processor.py`             |

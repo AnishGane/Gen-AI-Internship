@@ -81,6 +81,8 @@ uv run Week1/day1/01_lists.py
 | Day 2 | Pydantic schema validation, self-correcting retry loop, entity extraction | `04_pydantic_validation.py`, `05_self_correcting_retry.py`, `06_entity_extraction.py`     | [Go to Day2](./Week4/day2/) |
 | Day 3 | Delimiters & prompt injection awareness, prompt version comparison        | `07_delimiters_and_injection.py`, `08_prompt_version_comparison.py`                       | [Go to Day3](./Week4/day3/) |
 | Day 4 | Smart CLI text Toolkit                                                    | `09_smart_text_toolkit.py`                                                                | [Go to Day4](./Week4/day4/) |
+| Day 5 | CLI-level testing of the mini project via subprocess                      | `10_test_toolkit.py`                                                                      | [Go to Day5](./Week4/day5/) |
+| Day 6 | Mini Project 2: Batch Text Processor (async, logging, validation)         | `11_batch_text.py`                                                                        | [Go to Day6](./Week4/day6/) |
 
 ---
 
@@ -90,7 +92,7 @@ uv run Week1/day1/01_lists.py
 - [x] Week 1
 - [x] Week 2
 - [x] Week 3
-- [ ] Week 4
+- [x] Week 4
 - **Month 2**
 - [ ] Week 5
 - [ ] Week 6

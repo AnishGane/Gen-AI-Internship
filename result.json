@@ -1,0 +1,44 @@
+[
+  {
+    "index": 0,
+    "text": "The app crashes every time I try to upload a photo.",
+    "success": true,
+    "category": "Bug Report",
+    "confidence": "high"
+  },
+  {
+    "index": 1,
+    "text": "Would be great if you added dark mode support.",
+    "success": true,
+    "category": "Feature Request",
+    "confidence": "high"
+  },
+  {
+    "index": 2,
+    "text": "Really love how fast the new update is, great work!",
+    "success": true,
+    "category": "Praise",
+    "confidence": "high"
+  },
+  {
+    "index": 3,
+    "text": "Can you clarify how the referral bonus actually works?",
+    "success": true,
+    "category": "Other",
+    "confidence": "high"
+  },
+  {
+    "index": 4,
+    "text": "Checkout page froze on me twice this week, very frustrating.",
+    "success": true,
+    "category": "Bug Report",
+    "confidence": "high"
+  },
+  {
+    "index": 5,
+    "text": "Just wanted to say the customer support team was super helpful today.",
+    "success": true,
+    "category": "Praise",
+    "confidence": "high"
+  }
+]

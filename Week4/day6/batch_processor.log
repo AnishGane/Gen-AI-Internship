@@ -1,0 +1,12 @@
+2026-08-30 21:34:31,896 [INFO] Loaded 6 texts from .\Week4\day6\sample_feedback.csv
+2026-08-30 21:34:37,425 [INFO] [0] Classified as 'Bug Report' (confidence: high)
+2026-08-30 21:34:42,329 [INFO] [2] Classified as 'Praise' (confidence: high)
+2026-08-30 21:34:44,268 [INFO] [4] Classified as 'Bug Report' (confidence: high)
+2026-08-30 21:40:03,047 [INFO] Loaded 6 texts from .\Week4\day6\sample_feedback.csv
+2026-08-30 21:40:05,516 [INFO] [1] Classified as 'Feature Request' (confidence: high)
+2026-08-30 21:40:05,808 [INFO] [0] Classified as 'Bug Report' (confidence: high)
+2026-08-30 21:40:06,877 [INFO] [4] Classified as 'Bug Report' (confidence: high)
+2026-08-30 21:40:07,510 [INFO] [2] Classified as 'Praise' (confidence: high)
+2026-08-30 21:40:08,025 [INFO] [5] Classified as 'Praise' (confidence: high)
+2026-08-30 21:40:09,768 [INFO] [3] Classified as 'Other' (confidence: high)
+2026-08-30 21:40:09,770 [INFO] Batch complete: 6 succeeded, 0 failed
