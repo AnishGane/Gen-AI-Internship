@@ -10,8 +10,7 @@ load_dotenv(BASE_DIR / ".env")
 
 BASE_URL = "https://openrouter.ai/api/v1"
 API_KEY = os.getenv("OPENROUTER_API_KEY")
-MAX_TOKENS = 400
-MODEL = "openrouter/free"
+EMBEDDING_MODEL = "nvidia/llama-nemotron-embed-vl-1b-v2:free"
 
 if not API_KEY:
     raise ValueError("OPENROUTER_API_KEY environment variable not set")
