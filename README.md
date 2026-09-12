@@ -86,6 +86,19 @@ uv run Week1/day1/01_lists.py
 
 ---
 
+## Week 5
+
+| Day   | Topics Covered                                                                 | Files                                                                                                       | Link                        |
+| ----- | ------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------- | --------------------------- |
+| Day 1 | Single embedding, batch embeddings, dot product and embedding intuition        | `01_first_embedding_call.py`, `02_batch_embeddings.py`, `03_intuition_similar_vs_different.py`              | [Go to Day1](./Week5/day1/) |
+| Day 2 | Cosine similarity, vector comparison metrics, ranking by similarity            | `04_cosine_similarity_from_scratch.py`, `05_comparing_similarity_metrics.py`, `06_ranking_by_similarity.py` | [Go to Day2](./Week5/day2/) |
+| Day 3 | Keyword vs semantic search, semantic search engine, Top-K retrieval            | `07_keyword_vs_semantic.py`, `08_semantic_search.py`, `09_top_k_retrieval.py`                               | [Go to Day3](./Week5/day3/) |
+| Day 4 | Embedding precomputation, storing/loading vectors, searching stored embeddings | `10_precompute_embeddings.py`, `11_store_load_embeddings.py`, `12_search_stored_embeddings.py`              | [Go to Day4](./Week5/day4/) |
+| Day 5 | Text chunking, chunk overlap, chunk-based semantic search                      | `13_text_chunking.py`, `14_chunking_with_overlap.py`, `15_chunk_search.py`                                  | [Go to Day5](./Week5/day5/) |
+| Day 6 | Complete semantic search pipeline, interactive CLI, final Week 5 deliverable   | `16_semantic_search_pipeline.py`, `17_interactive_search.py`, `18_final_semantic_search.py`                 | [Go to Day6](./Week5/day6/) |
+
+---
+
 ## Internship Progress
 
 - **Month 1**
@@ -94,7 +107,7 @@ uv run Week1/day1/01_lists.py
 - [x] Week 3
 - [x] Week 4
 - **Month 2**
-- [ ] Week 5
+- [x] Week 5
 - [ ] Week 6
 - [ ] Week 7
 - [ ] Week 8
