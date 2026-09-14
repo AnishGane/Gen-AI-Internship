@@ -10,6 +10,7 @@ load_dotenv(BASE_DIR / ".env")
 
 BASE_URL = os.getenv("BASE_URL")
 API_KEY = os.getenv("OPENROUTER_API_KEY")
+EMBEDDING_MODEL = os.getenv("EMBEDDING_MODEL")
 
 # Vector database configuration
 COLLECTION_NAME = os.getenv(
