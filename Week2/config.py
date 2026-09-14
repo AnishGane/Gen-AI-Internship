@@ -8,10 +8,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Load .env from the project root
 load_dotenv(BASE_DIR / ".env")
 
-BASE_URL = "https://openrouter.ai/api/v1"
+BASE_URL = os.getenv("BASE_URL")
 API_KEY = os.getenv("OPENROUTER_API_KEY")
-MAX_TOKENS = 400
-MODEL = "openrouter/free"
-
-if not API_KEY:
-    raise ValueError("OPENROUTER_API_KEY environment variable not set")
+MAX_TOKENS = os.getenv("MAX_TOKENS")
+MODEL = os.getenv("MODEL")
