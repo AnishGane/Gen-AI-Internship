@@ -4,7 +4,7 @@ from qdrant_client import QdrantClient
 from qdrant_client.http import models
 
 from Week6.config import COLLECTION_NAME, QDRANT_PATH
-from Week6.exceptions import VectorDatabaseException
+from Week6.exceptions import VectorDatabaseError
 from Week6.logger import logger
 
 class QdrantService:
@@ -26,7 +26,7 @@ class QdrantService:
                 "Failed to intialize Qdrant client"
             )
 
-            raise VectorDatabaseException(
+            raise VectorDatabaseError(
                 "Failed to intialize Qdrant client"
             ) from exc
 
@@ -94,59 +94,59 @@ class QdrantService:
                 f"'{collection_name}'."
             ) from exc
 
-def get_collections(self) -> list[str]:
-        """
-        Return all collection names.
-        """
+    def get_collections(self) -> list[str]:
+            """
+            Return all collection names.
+            """
 
-        try:
-            response = self.client.get_collections()
+            try:
+                response = self.client.get_collections()
 
-            return [
-                collection.name
-                for collection in response.collections
-            ]
+                return [
+                    collection.name
+                    for collection in response.collections
+                ]
 
-        except Exception as exc:
-            logger.exception(
-                "Failed to retrieve collections"
-            )
+            except Exception as exc:
+                logger.exception(
+                    "Failed to retrieve collections"
+                )
 
-            raise VectorDatabaseError(
-                "Failed to retrieve collections."
-            ) from exc
+                raise VectorDatabaseError(
+                    "Failed to retrieve collections."
+                ) from exc
 
-def delete_collection(
-        self,
-        collection_name: str = COLLECTION_NAME,
-    ) -> None:
-        """
-        Delete a collection.
-        """
+    def delete_collection(
+            self,
+            collection_name: str = COLLECTION_NAME,
+        ) -> None:
+            """
+            Delete a collection.
+            """
 
-        try:
-            self.client.delete_collection(
-                collection_name=collection_name
-            )
+            try:
+                self.client.delete_collection(
+                    collection_name=collection_name
+                )
 
-            logger.info(
-                "Deleted collection '%s'",
-                collection_name,
-            )
+                logger.info(
+                    "Deleted collection '%s'",
+                    collection_name,
+                )
 
-        except Exception as exc:
-            logger.exception(
-                "Failed to delete collection"
-            )
+            except Exception as exc:
+                logger.exception(
+                    "Failed to delete collection"
+                )
 
-            raise VectorDatabaseError(
-                f"Failed to delete collection "
-                f"'{collection_name}'."
-            ) from exc
+                raise VectorDatabaseError(
+                    f"Failed to delete collection "
+                    f"'{collection_name}'."
+                ) from exc
 
-def close(self) -> None:
-        """
-        Close the Qdrant client.
-        """
+    def close(self) -> None:
+            """
+            Close the Qdrant client.
+            """
 
-        self.client.close()
+            self.client.close()
