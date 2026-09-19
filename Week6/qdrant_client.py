@@ -143,6 +143,20 @@ class QdrantService:
                     f"Failed to delete collection "
                     f"'{collection_name}'."
                 ) from exc
+                
+    def count_points(self) -> int:
+        result = self.client.count(
+        collection_name=COLLECTION_NAME,
+        exact=True,
+    )
+
+    return result.count
+                
+    def insert_points(self, points: list[models.PointStruct]):
+        self.client.upsert(
+            collection_name=COLLECTION_NAME,
+            points=points,
+        )
 
     def close(self) -> None:
             """

@@ -32,15 +32,15 @@ def chunk_text(
             "overlap must be smaller than chunk_size."
         )
 
-    words = text.spilt()
+    words = text.split()
 
     chunks: list[DocumentChunk] = []
 
     step = chunk_size - overlap
 
-    for chunk_id, start in enumerate(
-        range(0, len(words), step)
-    ):
+    chunk_id = 0
+
+    for start in range(0, len(words), step):
         chunk_words = words[
             start: start + chunk_size
         ]
@@ -55,5 +55,7 @@ def chunk_text(
                 chunk_id = chunk_id
             )
         )
+
+        chunk_id += 1
 
     return chunks

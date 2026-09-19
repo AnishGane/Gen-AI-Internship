@@ -86,38 +86,37 @@ class EmbeddingService:
         Generate an embedding for multiple texts.
         """
 
-        def __init__(self):
-            if not texts:
+        if not texts:
                 raise EmbeddingError(
                     "Cannot generate embedding for empty text."
                 )
                 
-            if any(not text.strip() for text in texts):
+        if any(not text.strip() for text in texts):
                 raise EmbeddingError(
                     "Input contains empty text."
                 )
 
-            try:
-                response = self.client.embeddings.create(
+        try:
+            response = self.client.embeddings.create(
                     model=self.model,
                     input=texts,
                     encoding_format="float"
-                )
+            )
 
-                vectors = [result.embedding for result in response.data]
+            vectors = [result.embedding for result in response.data]
 
-                logger.info(
-                    "Generated embedding with dimension %d",
-                    len(vectors[0])
-                )
+            logger.info(
+                        "Generated embedding with dimension %d",
+                        len(vectors[0])
+            )
 
-                return vectors
+            return vectors
             
-            except Exception as exc:
+        except Exception as exc:
                 logger.exception(
                     "Failed to generate batch embeddings"
                 )
-
+                
                 raise EmbeddingError(
                     "Failed to generate batch embeddings."
                 ) from exc
