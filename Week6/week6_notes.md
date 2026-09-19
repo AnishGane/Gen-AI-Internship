@@ -454,7 +454,6 @@ Example:
 ```python
 from pydantic import BaseModel
 
-
 class DocumentChunk(BaseModel):
     text: str
     source: str
@@ -553,4 +552,251 @@ Example output:
 2026-09-14 08:49:58 | INFO | Week6 | Qdrant initialized successfully.
 ```
 
+---
 
+# Day 1 - Introduction to Vector Databases and Qdrant Setup
+
+Day 1 focuses on understanding what a vector database is and setting up Qdrant locally.
+
+The three tasks gradually move from understanding the concept to creating an actual vector collection.
+
+---
+
+## Task1 - Intro to Vector Databases
+
+**Concept**: A vector database stores embeddings and allows fast similarity searches.
+
+Week 5 used a manual approach:
+
+```python
+scores = []
+
+for candidate, vector in zip(candidates, vectors):
+  score = cosine_similarity(
+  query_vector,
+  vector
+)
+
+scores.append((candidate, score))
+
+results = sorted(
+  scores,
+  key=lambda item: item[1],
+  reverse=True
+)
+```
+
+This works for a small dataset.
+
+However, a vector database handles this process more efficiently for larger datasets.
+
+The basic comparison is:
+
+```text
+**Week 5**
+
+Query
+↓
+Generate Embedding
+↓
+Loop Through Every Vector
+↓
+Calculate Similarity
+↓
+Sort Results
+
+**Week 6**
+
+Query
+↓
+Generate Embedding
+↓
+Vector Database
+↓
+Search Index
+↓
+Return Most Relevant Results
+```
+
+**Run**
+
+```bash
+uv run Week6/day1/01_vector_database_concept.py
+```
+
+---
+
+## Task2 - Local Qdrant Setup
+
+**Concept**: Set up a local Qdrant database and initialize a reusable client.
+
+The Qdrant service is initialized using the configured storage path:
+
+```python
+from Week6.qdrant_client import QdrantService
+from Week6.config import QDRANT_PATH
+
+def create_qdrant_client() -> QdrantService:
+  return QdrantService(
+  path=QDRANT_PATH
+)
+```
+
+The script checks the available collections:
+
+```python
+collections = client.get_collections()
+
+if not collections:
+print("No collections found.")
+```
+
+Example output:
+
+```terminal
+========
+CREATE QDRANT CLIENT
+========
+
+Qdrant client created successfully.
+
+Storage path:
+storage/qdrant
+
+No collections found.
+```
+
+At this stage, Qdrant is running locally and ready to store vector collections.
+
+**Run**
+
+```bash
+uv run Week6/day1/02_qdrant_setup.py
+```
+
+---
+
+## Task3 - Creating a Qdrant Collection
+
+**Concept**: Create a collection that can store embeddings.
+
+Before creating a collection, we need to know the embedding dimension.
+
+Example:
+
+```python
+vector = embedding_service.embed_text(
+"This is a test document."
+)
+
+vector_size = len(vector)
+```
+
+If the embedding contains:
+
+```text
+1536 numbers
+```
+
+the collection must be configured with:
+
+```python
+VectorParams(
+  size=1536,
+  distance=Distance.COSINE
+)
+```
+
+Example collection creation:
+
+```python
+client.create_collection(
+  collection_name=COLLECTION_NAME,
+  vectors_config=VectorParams(
+  size=vector_size,
+  distance=Distance.COSINE
+))
+```
+
+The collection structure is:
+
+```text
+Collection
+│
+├── Point 1
+│ ├── ID
+│ ├── Vector
+│ └── Payload
+│
+├── Point 2
+│ ├── ID
+│ ├── Vector
+│ └── Payload
+│
+└── Point 3
+├── ID
+├── Vector
+└── Payload
+```
+
+The embedding dimension must match the collection configuration.
+
+For example:
+
+```text
+Collection vector size: 1536
+
+Stored vector size: 1536
+```
+
+If the sizes do not match, Qdrant cannot store the vector correctly.
+
+Run
+
+```bash
+uv run Week6/day1/03_create_collection.py
+```
+
+---
+
+## Week 6 Overall Architecture
+
+The complete Week 6 workflow will gradually build toward:
+
+```text
+Documents
+│
+▼
+Load Documents
+│
+▼
+Chunk Documents
+│
+├── Chunk 1
+├── Chunk 2
+├── Chunk 3
+└── Chunk N
+│
+▼
+Generate Embeddings
+│
+▼
+Store in Qdrant
+│
+├── Vector
+├── Text
+├── Source
+└── Metadata
+│
+▼
+User Query
+│
+▼
+Generate Query Embedding
+│
+▼
+Qdrant Similarity Search
+│
+▼
+Return Most Relevant Chunks
+```

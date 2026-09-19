@@ -99,6 +99,12 @@ uv run Week1/day1/01_lists.py
 
 ---
 
+## Week 6
+
+| Day   | Topics Covered                                                   | Files                                                                            | Link                        |
+| ----- | ---------------------------------------------------------------- | -------------------------------------------------------------------------------- | --------------------------- |
+| Day 1 | Concept of Vector database, Qdrant Setup and Collection Creation | `01_vector_database_concept.py`, `02_qdrant_setup.py`, `03_create_collection.py` | [Go to Day1](./Week6/day1/) |
+
 ## Internship Progress
 
 - **Month 1**
