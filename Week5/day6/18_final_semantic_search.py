@@ -9,19 +9,16 @@ from Week5.config import (
     EMBEDDING_MODEL,
 )
 
-
 client = OpenAI(
     base_url=BASE_URL,
     api_key=API_KEY,
 )
-
 
 EMBEDDINGS_FILE = (
     Path(__file__).parent.parent
     / "day4"
     / "embeddings.json"
 )
-
 
 def get_embedding(text):
     response = client.embeddings.create(
@@ -31,7 +28,6 @@ def get_embedding(text):
     )
 
     return response.data[0].embedding
-
 
 def cosine_similarity(a, b):
     dot = sum(
@@ -56,7 +52,6 @@ def cosine_similarity(a, b):
         magnitude_a * magnitude_b
     )
 
-
 def load_embeddings():
     with open(
         EMBEDDINGS_FILE,
@@ -64,7 +59,6 @@ def load_embeddings():
         encoding="utf-8",
     ) as file:
         return json.load(file)
-
 
 def semantic_search(
     query,
@@ -94,7 +88,6 @@ def semantic_search(
     )
 
     return scored_documents[:top_k]
-
 
 def main():
     documents = load_embeddings()
@@ -136,7 +129,6 @@ def main():
             print(
                 f"   {result['text']}\n"
             )
-
 
 if __name__ == "__main__":
     main()

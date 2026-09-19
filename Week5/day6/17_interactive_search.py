@@ -1,9 +1,6 @@
 import json
-
 from openai import OpenAI
-
 from Week5.config import API_KEY, BASE_URL, EMBEDDING_MODEL
-
 
 client = OpenAI(
     base_url=BASE_URL,
@@ -18,7 +15,6 @@ def get_embedding(text):
     )
 
     return response.data[0].embedding
-
 
 def cosine_similarity(a, b):
     dot = sum(

@@ -1,7 +1,5 @@
 import json
-
 from openai import OpenAI
-
 from Week5.config import API_KEY, BASE_URL, EMBEDDING_MODEL
 
 client = OpenAI(
