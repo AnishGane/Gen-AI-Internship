@@ -7,13 +7,13 @@ def load_documents():
     for document_path in DOCUMENT_PATH.glob("*.txt"):
         text = document_path.read_text(encoding="utf-8")
 
-        chunks = chunk_text(
+        document_chunks = chunk_text(
             text = text,
             source = document_path.name,
             chunk_size = CHUNK_SIZE,
             overlap = CHUNK_OVERLAP,
         )
 
-        chunks.extend(chunks)
+        chunks.extend(document_chunks)
 
     return chunks

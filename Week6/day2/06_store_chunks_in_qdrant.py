@@ -16,6 +16,15 @@ def main():
     chunks = load_documents()
 
     print(f"\nLoaded chunks: {len(chunks)}")
+    
+    print("\nChunks before embedding:")
+
+    for index, chunk in enumerate(chunks):
+        print("\n" + "=" * 50)
+        print(f"Index: {index}")
+        print(f"Source: {chunk.source}")
+        print(f"Chunk ID: {chunk.chunk_id}")
+        print(f"Text: {chunk.text}")
 
     if not chunks:
         logger.error("No chunks found. Please check your data.")
@@ -99,6 +108,20 @@ def main():
             "Stored %d points.",
             len(points)
         )
+
+        stored_points = qdrant.get_points()
+
+        logger.info(
+            "Retrieved %d points.",
+            len(stored_points)
+        )
+        
+        for point in stored_points:
+            print("\n" + "=" * 20)
+            print(f"ID: {point.id}")
+            print(f"Source: {point.payload.get('source')}")
+            print(f"Chunk ID: {point.payload.get('chunk_id')}")
+            print(f"Text: {point.payload.get('text')}")
 
     finally:
         qdrant.close()

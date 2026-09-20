@@ -11,7 +11,6 @@ class QdrantService:
     """
     Handles all Qdrant database operations
     """
-
     def __init__(self, path: str = QDRANT_PATH):
         try:
             self.client = QdrantClient(path = path)
@@ -34,7 +33,6 @@ class QdrantService:
         """
         Check  whether a collection exists.
         """
-
         try:
             return self.client.collection_exists(
                 collection_name = collection_name
@@ -57,7 +55,6 @@ class QdrantService:
         """
         Create a Qdrant collection usinf cosine similarity.
         """
-
         if vector_size <= 0:
             raise VectorDatabaseError(
                 "vector_size must be greater than zero."
@@ -98,7 +95,6 @@ class QdrantService:
             """
             Return all collection names.
             """
-
             try:
                 response = self.client.get_collections()
 
@@ -123,7 +119,6 @@ class QdrantService:
             """
             Delete a collection.
             """
-
             try:
                 self.client.delete_collection(
                     collection_name=collection_name
@@ -146,21 +141,56 @@ class QdrantService:
                 
     def count_points(self) -> int:
         result = self.client.count(
-        collection_name=COLLECTION_NAME,
-        exact=True,
-    )
+            collection_name=COLLECTION_NAME,
+            exact=True,
+        )
 
-    return result.count
+        return result.count
                 
     def insert_points(self, points: list[models.PointStruct]):
         self.client.upsert(
             collection_name=COLLECTION_NAME,
             points=points,
         )
+        
+    def get_points(self, limit: int = 10):
+        result = self.client.scroll(
+            collection_name = COLLECTION_NAME,
+            limit = limit,
+            with_payload = True,
+            with_vectors = False
+        )
+        
+        return result[0]
+        
+    def search_qdrant(
+        self, 
+        query_vector: list[float],
+        limit: int = 5
+    ):
+        
+        if not query_vector:
+            raise ValueError(
+                "Query vector cannot be empty."
+            )
+
+        if limit <= 0:
+            raise ValueError(
+                "Limit must be greater than zero."
+            )
+            
+        result = self.client.query_points(
+            collection_name = COLLECTION_NAME,
+            query = query_vector,
+            limit = limit,
+            with_payload = True,
+            with_vectors = False
+        )
+        
+        return result.points
 
     def close(self) -> None:
             """
             Close the Qdrant client.
             """
-
             self.client.close()
