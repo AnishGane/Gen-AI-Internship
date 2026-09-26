@@ -1,4 +1,3 @@
-from typing import Any
 
 from qdrant_client import QdrantClient
 from qdrant_client.http import models
@@ -166,7 +165,8 @@ class QdrantService:
     def search_qdrant(
         self, 
         query_vector: list[float],
-        limit: int = 5
+        limit: int = 5,
+        source: str | None = None
     ):
         
         if not query_vector:
@@ -178,16 +178,41 @@ class QdrantService:
             raise ValueError(
                 "Limit must be greater than zero."
             )
-            
-        result = self.client.query_points(
-            collection_name = COLLECTION_NAME,
-            query = query_vector,
-            limit = limit,
-            with_payload = True,
-            with_vectors = False
-        )
         
-        return result.points
+        try:
+            query_filter = None
+
+            if source:
+                query_filter = models.Filter(
+                    must = [
+                        models.FieldCondition(
+                            key = "source",
+                            match = models.MatchValue(
+                                value = source
+                            )
+                        )
+                    ]
+                )
+            
+            result = self.client.query_points(
+                collection_name = COLLECTION_NAME,
+                query = query_vector,
+                limit = limit,
+                with_payload = True,
+                with_vectors = False,
+                query_filter = query_filter,
+            )
+            
+            return result.points
+        
+        except Exception as exc:
+            logger.exception(
+                "Failed to search Qdrant"
+            )
+            
+            raise VectorDatabaseError(
+                "Failed to search Qdrant."
+            ) from exc  
 
     def close(self) -> None:
             """
