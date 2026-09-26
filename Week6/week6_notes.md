@@ -63,15 +63,38 @@ Week6/
 ├── search.py
 ├── exceptions.py
 ├── logger.py
+├── utils.py
 │
-└── day1/
-    ├── 01_vector_database_intro.py
-    ├── 02_qdrant_setup.py
-    └── 03_create_collection.py
-    └── ...
+├── data/
+│   └── documents/
+│       ├── python.txt
+│       └── React.txt
+│
+├── storage/
+│   └── qdrant/
+│
+├── day1/
+│   ├── 01_environment_check.py
+│   ├── 02_qdrant_setup.py
+│   └── 03_create_collection.py
+│
+├── day2/
+│   ├── 04_document_chunk.py
+│   ├── 05_embed_chunks.py
+│   └── 06_store_chunks_in_qdrant.py
+│
+├── day3/
+│   ├── 07_vector_search.py
+│   └── 08_metadata_payload.py
+│   └── 09_top_k_search.py
+│
+└── day4/
+    ├── 10_search_service.py
+    ├── 11_filtered_search.py
+    └── 12_metadata_filtered_search.py
 ```
 
-The main goal of Week 6 is to understand how embeddings move from simple Python lists into a dedicated vector database.
+The main goal of **Week 6** is to understand how embeddings move from simple Python lists into a dedicated vector database.
 
 ---
 
@@ -90,6 +113,8 @@ The main goal of Week 6 is to understand how embeddings move from simple Python 
 [qdrant_client.py](E:\Gen AI Internship Repo\Week6\qdrant_client.py)
 
 [utils.py](E:\Gen AI Internship Repo\Week6\utils.py)
+
+[search.py](E:\Gen AI Internship Repo\Week6\search.py)
 
 ---
 
@@ -581,7 +606,7 @@ The three tasks gradually move from understanding the concept to creating an act
 
 ---
 
-### Task1 - Intro to Vector Databases
+### Task 1 - Intro to Vector Databases
 
 **Concept**: A vector database stores embeddings and allows fast similarity searches.
 
@@ -646,7 +671,7 @@ uv run Week6/day1/01_vector_database_concept.py
 
 ---
 
-### Task2 - Local Qdrant Setup
+### Task 2 - Local Qdrant Setup
 
 **Concept**: Set up a local Qdrant database and initialize a reusable client.
 
@@ -696,7 +721,7 @@ uv run Week6/day1/02_qdrant_setup.py
 
 ---
 
-### Task3 - Creating a Qdrant Collection
+### Task 3 - Creating a Qdrant Collection
 
 **Concept**: Create a collection that can store embeddings.
 
@@ -791,7 +816,7 @@ Python is commonly used for web development,
 data science, automation and artificial intelligence.
 ```
 
-### Task1 - Chunking documents
+### Task 1 - Chunking documents
 
 Here, first of all we have `load_document(document_path: str)` that reads the text from the `document_path` (_python.txt_), which is basically name of the txt file.
 
@@ -832,7 +857,7 @@ uv run Week6/day2/04_document_chunk.py
 
 ---
 
-### Task2 - Embedding the chunk
+### Task 2 - Embedding the chunk
 
 Here, we have used the reusable `load_documents()` from `utils.py`.
 
@@ -884,7 +909,7 @@ uv run Week6/day2/05_embed_chunks.py
 
 ---
 
-### Task3 - Store the chunks into qdrant
+### Task 3 - Store the chunks into qdrant
 
 After chunking documents and embedding them, now we store the chunk into the qdrant storage.
 
@@ -1103,6 +1128,273 @@ Top 10
 ```
 
 This is called **Top-K retrieval**.
+
+**Run**:
+
+```bash
+uv run Week6/day3/07_vector_search.py
+uv run Week6/day3/08_metadata_payload.py
+uv run Week6/day3/09_top_k_search.py
+```
+
+---
+
+## Day 4 - Reusable Search Service, Filtered Search & Metadata Filtered Search
+
+In Day 4, We have made the `search.py` that contains the **SearchService** class that is used by the reusable search service file and filtered search file.
+
+---
+
+### Task 1 - Reusable Search
+
+Here, we have created the service object from the Week6 `search.py`'s **SearchService** class that contains `search()`.
+
+The main objective of this task is to create a reusable function / a service for search and filtered search.
+
+**Run**:
+
+```bash
+uv run Week6/day4/10_search_service.py
+```
+
+---
+
+### Task 2 - Filtered Search
+
+_min_score = minimum_score_
+
+Here, a filtered search (top-k + min_score filtering) is implemented, that define a `min_score` that the result's score should pass in order to be displayed. Both **top-k retrieval & min_score** is used.
+
+Basic vector search gives you the closest vectors:
+
+```python
+limit=5
+```
+
+But "top 5" does not necessarily mean all 5 are relevant.
+
+For example:
+
+```text
+Query: What is React used for?
+
+Result 1 → 0.91
+Result 2 → 0.83
+Result 3 → 0.78
+Result 4 → 0.21
+Result 5 → 0.09
+```
+
+Returning results 4 and 5 may be undesirable.
+
+So introduce:
+
+```text
+Top-K
+
+- Minimum similarity score
+```
+
+**Important concept**
+
+The pipeline is now:
+
+```text
+Query
+↓
+Embedding
+↓
+Qdrant
+↓
+Top K results
+↓
+Score filtering
+↓
+Relevant chunks
+```
+
+This is much closer to how a real semantic-search application works.
+
+**Run**:
+
+```bash
+uv run Week6/day4/11_filtered_search.py
+```
+
+---
+
+### Task 3 - Metadata Payload Filtered Search
+
+We currently have metadata like:
+
+```python
+payload={
+    "text": chunk.text,
+    "source": chunk.source,
+    "chunk_id": chunk.chunk_id,
+}
+```
+
+This allows us to ask:
+
+> Search for React information, but only inside React.txt.
+
+Instead of searching the entire collection.
+
+For example:
+
+```text
+
+All documents
+├── python.txt
+├── React.txt
+└── javascript.txt
+
+Query:
+"What is React used for?"
+
+Filter:
+source = React.txt
+```
+
+For this, update `QdrantService.search_qdrant()` so it can optionally accept a source.
+
+```python
+def search_qdrant(
+self,
+query_vector: list[float],
+limit: int = 5,
+source: str | None = None,
+):
+```
+
+Then construct a Qdrant filter:
+
+```python
+query_filter = None
+
+if source:
+
+    query_filter = models.Filter(
+        must=[
+            models.FieldCondition(
+                key="source",
+                match=models.MatchValue(
+                    value=source
+                ),
+            )
+        ]
+    )
+```
+
+Then:
+
+```python
+result = self.client.query_points(
+collection_name=COLLECTION_NAME,
+query=query_vector,
+limit=limit,
+query_filter=query_filter,
+with_payload=True,
+with_vectors=False,
+)
+```
+
+---
+
+```python
+def search(
+        self,
+        query: str,
+        limit: int = 5,
+        min_score: Optional[float] = None
+    ) -> list[SearchChunk]:
+        if not query.strip():
+            raise ValueError(
+                "Query cannot be empty."
+            )
+
+        if limit <= 0:
+            raise ValueError(
+                "Limit must be greater than zero."
+            )
+
+        if min_score is not None and min_score < 0.3:
+            raise ValueError(
+                "Min score must be greater than 0.3 or None."
+            )
+
+        query_vector = self.embedding_service.embed_text(query)
+
+        results = self.qdrant.search_qdrant(query_vector, limit)
+
+        search_results = []
+
+        for result in results:
+
+            if min_score is not None and result.score < min_score:
+                continue
+
+            search_results.append(
+                SearchChunk(
+                    text = result.payload["text"],
+                    source = result.payload["source"],
+                    chunk_id = result.payload["chunk_id"],
+                    score = result.score
+                )
+            )
+
+        return search_results
+```
+
+**Run**:
+
+```bash
+uv run Week6/day4/12_metadata_filtered_search.py
+```
+
+---
+
+## Day 5 - Evaluation + Week5 vs Week6 Comparison
+
+### Task 1 - Search Evaluation Dataset
+
+Here, what i have done.
+
+Suppose your search returns:
+
+```text
+Query:
+What is Python used for?
+
+Returned:
+React.txt
+```
+
+You need a way to determine that this is incorrect.
+
+The evaluation dataset provides the expected answer:
+
+```text
+"What is Python used for?"
+↓
+Expected:
+python.txt
+```
+
+This is called **ground truth**.
+
+**Run**:
+
+```bash
+uv run Week6/day5/13_evaluation_dataset.py
+```
+
+---
+
+### Task 2 - Evaluate Vector Search
+
+
 
 ---
 

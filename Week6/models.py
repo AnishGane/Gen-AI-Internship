@@ -34,3 +34,7 @@ class SearchChunk(BaseModel):
     source: str
     chunk_id: int
     score: float
+
+class EvaluationQuery(BaseModel):
+    query: str = Field(min_length = 1)
+    expected_sources: set[str]
