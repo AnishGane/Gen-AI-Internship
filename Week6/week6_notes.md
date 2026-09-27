@@ -1394,7 +1394,91 @@ uv run Week6/day5/13_evaluation_dataset.py
 
 ### Task 2 - Evaluate Vector Search
 
+Here, We are measuring my Qdrant search.
 
+Two useful metrics for my project used are:
+
+**Recall@K**:
+
+Recall answers:
+
+> "Did the correct document appear in my top K results?"
+
+**Formula**:
+
+```text
+Recall@K =
+relevant results retrieved
+
+-----------------
+
+total relevant results
+```
+
+For your small project, if:
+
+```text
+Expected:
+python.txt
+
+Top 3:
+python.txt
+React.txt
+javascript.txt
+```
+
+then:
+
+```text
+Recall@3 = 1
+```
+
+because the expected document was retrieved.
+
+**Precision@K**
+
+Precision answers:
+
+> "How many of the retrieved results were actually relevant?"
+
+**Formula**:
+
+```text
+Precision@K =
+relevant retrieved results
+
+-------------------
+
+total retrieved results
+```
+
+For example:
+
+```text
+Expected:
+python.txt
+
+Top 3:
+python.txt
+React.txt
+React.txt
+```
+
+Only one is relevant:
+
+```text
+Precision@3 = 1 / 3
+```
+
+For my current project, source-level evaluation is enough and is implemented here.
+
+```bash
+uv run Week6/day5/14_evaluation_search.py
+```
+
+---
+
+### Task 3 -
 
 ---
 

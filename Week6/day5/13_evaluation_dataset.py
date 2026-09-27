@@ -1,30 +1,6 @@
 # Create known queries and expected documents
 
-from Week6.models import EvaluationQuery
-
-EVALUATION_DATASET = [
-
-    EvaluationQuery(
-        query="What is Python used for?",
-        expected_sources={"python.txt"},
-    ),
-
-    EvaluationQuery(
-        query="What is React?",
-        expected_sources={"React.txt"},
-    ),
-
-    EvaluationQuery(
-        query="How is React used?",
-        expected_sources={"React.txt"},
-    ),
-
-    EvaluationQuery(
-        query="Which language is used for artificial intelligence?",
-        expected_sources={"python.txt"},
-    ),
-
-]
+from Week6.utils import EVALUATION_DATASET
 
 def main():
 
@@ -43,7 +19,6 @@ def main():
             f"Expected sources: "
             f"{', '.join(item.expected_sources)}"
         )
-
 
 if __name__ == "__main__":
     main()
