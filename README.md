@@ -101,12 +101,14 @@ uv run Week1/day1/01_lists.py
 
 ## Week 6
 
-| Day   | Topics Covered                                                              | Files                                                                             | Link                        |
-| ----- | --------------------------------------------------------------------------- | --------------------------------------------------------------------------------- | --------------------------- |
-| Day 1 | Concept of Vector database, Qdrant Setup and Collection Creation            | `01_vector_database_concept.py`, `02_qdrant_setup.py`, `03_create_collection.py`  | [Go to Day1](./Week6/day1/) |
-| Day 2 | Document Chunking, Embedding the chunks, Store chunks in qdrant Storage     | `04_document_chunk.py`, `05_embed_chunks.py`, `06_store_chunks_in_qdrant.py`      | [Go to Day2](./Week6/day2/) |
-| Day 3 | Concept of Vector Vector Search, Top-K Search and Payload                   | `07_vector_search.py`, `08_metadata_payload.py`, `09_top_k_search.py`             | [Go to Day3](./Week6/day3/) |
-| Day 4 | Reusable Search Service, Filtered Search & Metadata Payload Filtered Search | `10_search_service.py`, `11_filtered_search.py`, `12_metadata_filtered_search.py` | [Go to Day4](./Week6/day4/) |
+| Day   | Topics Covered                                                              | Files                                                                                | Link                        |
+| ----- | --------------------------------------------------------------------------- | ------------------------------------------------------------------------------------ | --------------------------- |
+| Day 1 | Concept of Vector database, Qdrant Setup and Collection Creation            | `01_vector_database_concept.py`, `02_qdrant_setup.py`, `03_create_collection.py`     | [Go to Day1](./Week6/day1/) |
+| Day 2 | Document Chunking, Embedding the chunks, Store chunks in qdrant Storage     | `04_document_chunk.py`, `05_embed_chunks.py`, `06_store_chunks_in_qdrant.py`         | [Go to Day2](./Week6/day2/) |
+| Day 3 | Concept of Vector Vector Search, Top-K Search and Payload                   | `07_vector_search.py`, `08_metadata_payload.py`, `09_top_k_search.py`                | [Go to Day3](./Week6/day3/) |
+| Day 4 | Reusable Search Service, Filtered Search & Metadata Payload Filtered Search | `10_search_service.py`, `11_filtered_search.py`, `12_metadata_filtered_search.py`    | [Go to Day4](./Week6/day4/) |
+| Day 5 | Dataset Evaluation, compare search                                          | `13_evaluation_dataset.py`, `14_evaluate_search.py`, `15_compare_search.py`          | [Go to Day5](./Week6/day5/) |
+| Day 6 | Final Vector Database App & Vector Search App                               | `16_vector_search_app.py`, `17_interactive_search.py`, `18_final_vector_database.py` | [Go to Day6](./Week6/day6/) |
 
 ## Internship Progress
 
@@ -117,7 +119,7 @@ uv run Week1/day1/01_lists.py
 - [x] Week 4
 - **Month 2**
 - [x] Week 5
-- [ ] Week 6
+- [x] Week 6
 - [ ] Week 7
 - [ ] Week 8
 - **Month 3**

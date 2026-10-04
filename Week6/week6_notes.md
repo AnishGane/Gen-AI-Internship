@@ -1478,7 +1478,73 @@ uv run Week6/day5/14_evaluation_search.py
 
 ---
 
-### Task 3 -
+### Task 3 - Week 5 Manual vs Week 6 Qdrant
+
+This is particularly important because it directly satisfies the internship requirement:
+
+> Compare results from the Week 5 manual approach with the vector database approach.
+
+**Week 5**
+
+The approach was roughly:
+
+```text
+Documents
+↓
+Chunks
+↓
+Generate embeddings
+↓
+Generate query embedding
+↓
+Calculate similarity manually
+↓
+Sort scores
+↓
+Top results
+```
+
+**Week 6**
+
+Now:
+
+```text
+Documents
+↓
+Chunks
+↓
+Generate embeddings
+↓
+Store vectors in Qdrant
+
+Query
+↓
+Generate query embedding
+↓
+Qdrant vector search
+↓
+Top results
+```
+
+The important difference is that Week 5 performs the similarity search in your Python code, while **Week 6 delegates vector retrieval to the vector database.**
+
+**Run**:
+
+```bash
+uv run Week6/day5/15_compare_search.py
+```
+
+---
+
+## Day 6 - Final Vector Database Application
+
+Wrap up about all the things learned from Day 1 - Day 5 of Week 6.
+
+```bash
+uv run Week6/day6/16_vector_search_app.py
+uv run Week6/day6/17_interactive_search.py
+uv run Week6/day6/18_final_vector_database.py
+```
 
 ---
 
