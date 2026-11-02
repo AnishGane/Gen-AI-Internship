@@ -261,3 +261,141 @@ Week7/
 ├── .env.example
 └── README.md
 ```
+
+---
+
+1. **logger.py**
+
+```python
+import json
+import logging
+import sys
+import time
+from contextlib import contextmanager
+```
+
+- `json` converts log data into JSON text.
+- `logging` provides Python’s logging system.
+- `sys.stderr` is where the log messages will be written.
+- `time.perf_counter()` provides a precise clock for measuring elapsed time.
+- `contextmanager` lets you use a function with Python’s with statement.
+
+`JSONFormatter`:
+
+```python
+class JSONFormatter(logging.Formatter):
+    def format(self, record):
+        data = {
+            "ts": self.formatTime(record),
+            "level": record.levelname,
+            "message": record.getMessage(),
+        }
+        data.update(getattr(record, "extra_fields", {}))
+
+        if record.exc_info:
+            data["exc"] = self.formatException(record.exc_info)
+
+        return json.dumps(data, default=str)
+```
+
+- When Python’s logging system handles a log record, this formatter makes a dictionary containing the time, level, and message, then converts it to JSON.
+- `getattr(record, "extra_fields", {})` looks for extra fields attached to the record. If there aren’t any, it uses an empty dictionary.
+- If the log record includes exception details, the formatter adds them under "exc". default=str converts values that JSON cannot encode directly into strings.
+
+`get_logger`:
+
+```python
+def get_logger(name: str = "rag") -> logging.Logger:
+    log = logging.getLogger(name)
+
+    if not log.handlers:
+        handler = logging.StreamHandler(sys.stderr)
+        handler.setFormatter(JSONFormatter())
+        log.addHandler(handler)
+        log.setLevel(logging.INFO)
+
+    return log
+```
+
+- This gets or creates a named logger. It adds a JSON-formatted output handler only if the logger doesn’t already have one, which helps avoid duplicate log lines.
+
+`log_event`:
+
+```python
+def log_event(log: logging.Logger, msg: str, **fields):
+    log.info(msg, extra={"extra_fields": fields})
+```
+
+- `**fields` collects additional named values into a dictionary.
+
+**Example**:
+```python
+log_event(logger, "Search completed", top_k=5, result_count=12)
+```
+
+- This produces a log record containing the message plus the top_k and result_count fields.
+
+`timer`:
+
+```python
+@contextmanager
+def timer(store: dict, key: str):
+    start = time.perf_counter()
+    try:
+        yield
+    finally:
+        store[key] = round((time.perf_counter() - start) * 1000, 1)
+```
+
+This measures how long a block takes and saves the elapsed time in milliseconds. The finally block runs even if the code inside the timer raises an error.
+
+**Example**:
+
+```python
+timings = {}
+
+with timer(timings, "retrieval_ms"):
+    results = search_documents("How does Qdrant work?")
+
+print(timings["retrieval_ms"])
+```
+
+---
+
+2. `embeddings.py`:
+
+- `__init__` loads the dense and sparse models and keeps them on the service object. The `FastEmbed` imports are inside the constructor, so FastEmbed is imported when you create the service.
+- `embed_dense(texts)` returns one dense vector per text.
+- `embed_sparse(texts)` returns one Qdrant sparse vector per document text.
+- `embed_sparse_query(query)` returns a sparse vector for a single query. It uses query_embed, which lets the sparse model process a search query separately from document text.
+
+`get_embedder`:
+
+```python
+@lru_cache(maxsize=1)
+def get_embedder() -> EmbeddingService:
+    return EmbeddingService()
+```
+
+- The first call creates the service and loads the models. The cache holds that instance so later calls reuse it.
+
+**For example**:
+
+```python
+embedder = get_embedder()
+
+dense_vectors = embedder.embed_dense(["Qdrant stores vectors."])
+sparse_vectors = embedder.embed_sparse(["Qdrant stores vectors."])
+query_vector = embedder.embed_sparse_query("vector database")
+```
+
+> One thing to keep in mind: dense and sparse vectors need corresponding vector configurations in your Qdrant collection before you can store and search them together.
+
+**Understand**:
+
+`Dense & Sparse Embedding` give Qdrant two ways to find relevant document chunks:
+- `Dense embeddings` capture meaning. A question like “How do I make a website interactive?” may find a chunk about JavaScript even if it doesn’t use the exact same words.
+- Sparse embeddings capture keyword matches. They’re useful when the query includes exact terms such as Qdrant, a product name, an error code, or a specific phrase.
+In this code, embed_dense() creates dense vectors for text, while embed_sparse() creates BM25-style sparse vectors for documents. embed_sparse_query() creates a sparse vector for a user’s search query.
+
+Together, they support hybrid search: dense search finds meaning-related content, and sparse search finds keyword-related content. Qdrant can combine their results so retrieval works well for both kinds of queries.

@@ -1,0 +1,9 @@
+[
+    {"id": 1, "question": "What is the refund window for annual plans?", "answerable": true,
+     "relevant_sources": ["policy.md"], "expected_keywords": ["30 days"]},
+    {"id": 2, "question": "Who is the CEO of the company?", "answerable": false,
+     "relevant_sources": [], "expected_keywords": []},
+    {"id": 3, "question": "Does the product support SSO and what protocols?", "answerable": true,
+     "relevant_sources": ["policy.md"], "expected_keywords": ["SAML"]}
+  ]
+  
