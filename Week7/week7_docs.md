@@ -113,7 +113,7 @@
 - Validate that every cited source ID exists in the retrieved context.
 - **Learn:** Structured output, Pydantic validation, citation attribution, and source verification.
 
-### Task 3 — Implement abstention and hallucination tests
+### Task 3 — Implement abstention(choosing not to answer rather than guessing) and hallucination tests
 
 - Return an explicit insufficient-evidence response when documents do not support an answer.
 - Test misleading, contradictory, and incomplete documents.
@@ -264,7 +264,7 @@ Week7/
 
 ---
 
-1. **logger.py**
+**1.** `logger.py`
 
 ```python
 import json
@@ -362,7 +362,7 @@ print(timings["retrieval_ms"])
 
 ---
 
-2. `embeddings.py`:
+**2.** `embeddings.py`:
 
 - `__init__` loads the dense and sparse models and keeps them on the service object. The `FastEmbed` imports are inside the constructor, so FastEmbed is imported when you create the service.
 - `embed_dense(texts)` returns one dense vector per text.
@@ -399,3 +399,173 @@ query_vector = embedder.embed_sparse_query("vector database")
 In this code, embed_dense() creates dense vectors for text, while embed_sparse() creates BM25-style sparse vectors for documents. embed_sparse_query() creates a sparse vector for a user’s search query.
 
 Together, they support hybrid search: dense search finds meaning-related content, and sparse search finds keyword-related content. Qdrant can combine their results so retrieval works well for both kinds of queries.
+
+---
+
+**3.** `llm_service.py`:
+
+This class sends prompts to OpenRouter through its OpenAI-compatible API. It tracks token usage and retries certain temporary failures.
+
+**Setup**
+
+The imports load the OpenAI client, your settings, your app’s `LLMError`, and the logging helpers.
+
+```python
+settings.validate_for_llm()
+```
+
+checks required configuration before the client is created. Then:
+
+```python
+self.client = OpenAI(
+    api_key=settings.openrouter_api_key,
+    base_url=settings.base_url,
+    timeout=settings.llm_timeout_s,
+    max_retries=0,
+)
+```
+
+creates the client pointed at OpenRouter. `max_retries`= 0 disables the client’s automatic retries because this class has its own retry loop. `self.usage` starts counters for successful calls and reported token usage.
+
+`complete()`
+
+This method takes a system prompt and a user prompt, sends them to the configured model, and returns the model’s text response.
+
+```python
+response = self.client.chat.completions.create(
+    model=settings.llm_model,
+    messages=[
+        {"role": "system", "content": system},
+        {"role": "user", "content": user},
+    ],
+    max_tokens=max_tokens,
+    temperature=temperature,
+)
+
+answer = response.choices[0].message.content
+```
+
+- If usage data is present, prompt_tokens and completion_tokens are added to the counters. Then the method returns the text, or an empty string if the response has no text.
+
+**Retries and errors**
+- The loop makes up to settings.llm_max_retries attempts. Connection errors, timeouts, rate limits, and server errors are treated as temporary: they’re logged, then retried after a delay that grows with each attempt (2**attempt seconds).
+- Other OpenAI API errors are wrapped as app’s LLMError and raised immediately. If all retry attempts fail, the method raises LLMError with the last failure.
+
+---
+
+**4.** `answer_evaluator.py`:
+
+- This code evaluates RAG answers in three ways: `did the system answer or abstain appropriately`, `did the answer include expected keywords`, and `did a model judge consider its claims supported by the retrieved context?`
+
+**Keyword score**
+
+```python
+def keyword_correct(answer: str, expected_keywords: list[str]) -> float:
+    if not expected_keywords:
+        return 1.0
+
+    answer_lower = answer.lower()
+    return sum(
+        keyword.lower() in answer_lower
+        for keyword in expected_keywords
+    ) / len(expected_keywords)
+```
+
+- This returns a score from `0.0` to `1.0`. For example, if two of four expected keywords appear in the answer, the score is 0.5. It checks for simple text matches, not whether the keywords are used correctly.
+
+**Faithfulness judge**
+
+- **JUDGE_SYS** asks the LLM to decide whether every factual claim in an answer is supported by the supplied context, and to respond in JSON.
+
+`judge_faithfulness()` sends the context and answer to your LLMService, tries to parse the JSON, and returns the judge’s faithful value. If parsing fails, it returns False.
+
+```python
+def judge_faithfulness(
+    llm: LLMService,
+    context: str,
+    answer: str,
+) -> bool:
+    prompt = f"<context>\n{context}\n</context>\n\nAnswer: {answer}"
+    raw = llm.complete(JUDGE_SYS, prompt, max_tokens=300)
+
+    try:
+        start = raw.find("{")
+        if start == -1:
+            return False
+
+        result, _ = json.JSONDecoder().raw_decode(raw[start:])
+        return result.get("faithful") is True
+    except (json.JSONDecodeError, AttributeError):
+        return False
+```
+
+- `raw_decode()` reads one JSON object from the response, even if the model adds text before it.
+
+**Evaluate a dataset**
+
+- `evaluate_answers()` runs ask_fn for every dataset question. It expects each call to return something shaped roughly like:
+
+```python
+{
+    "answer": {
+        "answer": "The answer text...",
+        "insufficient_evidence": False,
+    }
+}
+```
+
+- For answerable questions, it adds the keyword score and checks that the system did not abstain. For unanswerable questions, it checks that the system did abstain.
+- If both `llm` and `rag_context_fn` are supplied, it also asks the judge to score each non-abstained answer. `rag_context_fn(result)` should return the context that was used to produce that result.
+
+The returned metrics are:
+- `abstention_or_answer_accuracy`: how often the system made the right answer versus abstain decision.
+- `keyword_correctness`: average expected-keyword match for answerable questions.
+- `faithfulness`: share of judged answers the LLM marked faithful, or None if no answers were judged.
+- `n`: number of dataset questions.
+
+---
+
+*5.* `retrieval_evaluator.py`:
+
+This code measures retrieval quality: whether your search finds the right documents, how many it finds, and how high they appear in the results.
+
+The “golden dataset” is a set of test questions with the filenames that should be relevant to each question. For example:
+
+```python
+{
+    "question": "How do I configure Qdrant?",
+    "relevant_sources": ["qdrant_setup.pdf"],
+    "answerable": True,
+}
+```
+
+**The three metrics**
+- `Recall@K`: Of all the relevant documents, what fraction appeared in the first K results? Higher recall means fewer relevant documents were missed.
+- `Precision@K`: Of the first K results, what fraction were relevant? Higher precision means fewer irrelevant results were returned.
+- `MRR (Mean Reciprocal Rank)`: How high was the first relevant result? If it’s first, the score is 1; second, 1/2; third, 1/3. If no relevant result appears, it’s 0. The evaluator averages this score across questions.
+Here, **K** is a cutoff such as 1, 3, or 5.
+
+**What the functions do**
+
+- `recall_at_k()` compares the unique sources in the first `K` results with the relevant-source set:
+
+```python
+len(set(retrieved[:k]) & relevant) / len(relevant)
+```
+
+- `precision_at_k()` counts relevant results among the first `K` and divides by `K`. If fewer than `K` results are returned, this implementation still divides by `K`, which penalizes missing results.
+
+- `reciprocal_rank()` finds the position of the first relevant source and returns its reciprocal. If none is found, it returns `0`.
+
+`evaluate_retrieval()`:
+
+1. Keeps answerable dataset questions that have at least one known relevant source.
+2. Calls retrieve_fn(question) to get retrieved chunks.
+3. Compares each chunk’s source filename with the relevant filenames.
+4. Calculates the requested recall and precision values, plus MRR.
+5. Averages each metric across the kept questions and returns the number evaluated as n.
+Unanswerable questions are skipped because this code evaluates whether search finds known relevant documents; it doesn’t evaluate whether the RAG system correctly abstains.
+
+---
+
+
