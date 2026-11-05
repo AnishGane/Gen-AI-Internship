@@ -893,3 +893,117 @@ Finally, each returned point becomes a `RetrievedChunk`: its Qdrant ID and score
 A practical check before calling `search()` is that the vector required by the chosen mode is present: dense mode needs `dense_vec`, sparse mode needs `sparse_vec`, and hybrid mode needs both.
 
 ---
+
+*12.* `bm25_search.py`:
+
+This is a small helper that runs a` BM25-style keyword search` through your Qdrant `VectorStore`.
+
+```python
+from Week7.core.embeddings import get_embedder
+from Week7.core.vector_store import VectorStore
+```
+ 
+- `get_embedder` provides the embedding service that creates sparse vectors for search queries.
+- `VectorStore` is the Qdrant wrapper that performs the search.
+
+```python
+def bm25_search(store: VectorStore, query: str, k=10, filters=None):
+```
+
+The function takes:
+- `store`: the connected Qdrant vector store.
+- `query`: the user’s search text.
+- `k`: how many results to return, defaulting to 10.
+- `filters`: optional conditions, such as limiting results to a particular document.
+
+Inside the function:
+
+```python
+sparse_vec = get_embedder().embed_sparse_query(query)
+```
+
+It converts the query into a `sparse BM25 vector`. `get_embedder()` reuses the cached embedding service.
+
+Then `store.search()` is called with `mode="sparse"`, which tells your VectorStore to search the `"bm25"` vector in Qdrant. `limit=k` sets the result count, and `filters` narrows the search if provided.
+
+**In short:**
+
+```text
+query → sparse BM25 vector → Qdrant sparse search → top k chunks
+```
+
+---
+
+*13.* `dense_search.py`:
+
+This helper runs a `dense semantic search` through your Qdrant `VectorStore`.
+
+```python
+def dense_search(
+    store: VectorStore,
+    query: str,
+    k=10,
+    filters=None,
+    score_threshold=None,
+):
+```
+
+It takes the `vector store`, the user’s `query`, how many results to return `(k)`, optional `filters`, and an optional minimum `relevance score`.
+
+This line turns the query into a dense embedding:
+```python
+get_embedder().embed_dense([query])[0]
+```
+
+`embed_dense()` accepts a list of texts and returns a list of vectors. Since this search has one query, `[0]` selects its vector.
+
+Then `store.search()` is called with `mode="dense"`, which tells your `VectorStore` to search Qdrant’s `"dense"` vector. The store applies the filters and score threshold, then returns up to `k` matching chunks.
+
+**In short:**
+
+```text
+query → dense embedding → Qdrant semantic search → top-k chunks
+```
+
+---
+
+*14.* `hybrid_search.py`:
+
+It has two pieces: `hybrid_search()` combines dense and BM25 search for one query in Qdrant; `rrf_merge()` combines ranked results from multiple searches in Python.
+
+`hybrid_search()`
+
+```python
+def hybrid_search(store, query, k=10, filters=None):
+```
+
+It gets the cached embedding service, creates both a dense vector and a BM25 sparse query vector, then calls `store.search()` in `"hybrid"` mode. In your `VectorStore`, that mode prefetches dense and sparse results and combines their rankings with Qdrant’s server-side RRF.
+
+Here, `k=10` means “return up to 10 results.”
+
+`rrf_merge()`
+
+This function combines multiple ranked result lists. It’s useful for multi-query retrieval—for example, if you rewrite one question into three search queries, you can merge the three result lists.
+
+For each result, it adds this score:
+
+```text
+1 / (rrf_constant + rank)
+```
+
+A result appearing near the top gets a larger score. A result found in multiple lists gets its scores added together.
+- `k=60` is the RRF smoothing constant. It reduces how sharply ranks affect the score.
+- `top` optionally limits how many merged results to return.
+- `point_id` is used to recognize duplicate chunks across result lists.
+- `by_id.setdefault(...) keeps the first chunk object found for each ID.
+- `model_copy(update={"score": ...})` returns a copy with its score replaced by the fused RRF score.
+
+So there are two different “K” ideas:` hybrid_search(..., k=10)` controls the number of results; `rrf_merge(..., k=60)` is the RRF constant. Naming the latter `rrf_k` can make that clearer.
+
+---
+
+*15.* `query_writer.py`:
+
+
+
+---

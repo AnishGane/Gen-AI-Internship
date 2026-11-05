@@ -11,6 +11,9 @@ from Week7.logger import get_logger, log_event, timer
 from Week7.models import RetrievedChunk
 from Week7.core.generation.context_builder import ContextBuilder
 from Week7.core.generation.answer_generator import AnswerGenerator
+from Week7.core.retrieval.retriever import Retriever
+from Week7.core.retrieval.reranker import Reranker
+from Week7.core.retrieval.query_rewriter import QueryRewriter
 
 log = get_logger("rag")
 
