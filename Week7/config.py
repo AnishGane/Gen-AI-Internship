@@ -33,6 +33,7 @@ class Settings:
     context_token_budget: int = _int("CONTEXT_TOKEN_BUDGET", 3000)
     max_upload_mb: int = _int("MAX_UPLOAD_MB", 20)
     qdrant_url: str = os.getenv("QDRANT_URL", "http://localhost:6333")
+    qdrant_api_key = os.getenv("QDRANT_API_KEY")
 
     def validate_for_llm(self) -> None:
         if not self.openrouter_api_key:

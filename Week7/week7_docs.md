@@ -831,3 +831,65 @@ def delete(self, document_id: str) -> None:
 ```
 
 ---
+
+*11.* `vector_store.py`:
+
+This wraps `Qdrant` for your RAG app. It creates a collection for `dense` and `BM25` sparse vectors, stores document chunks, deletes or lists documents, and searches using filters.
+
+**Connection and collection setup**
+
+```python
+self.client = client or QdrantClient(
+    url=settings.qdrant_url,
+    api_key=settings.qdrant_api_key,
+)
+self.collection = collection or settings.collection_name
+```
+
+We can pass in an existing Qdrant client and collection name, or the class uses settings. For Qdrant Cloud, `qdrant_url` should be your cluster URL and `qdrant_api_key` its database API key.
+
+`ensure_collection()` checks whether the collection already exists. If not, it creates one with:
+- A named dense vector called `"dense"`, with size `settings.dense_dim` and cosine distance.
+- A named sparse vector called `"bm25"`, with Qdrant’s IDF modifier.
+- Keyword indexes on `document_id` and `source`, to support efficient filters on those fields.
+
+**Writing and deleting**
+
+`upsert()` builds one Qdrant point per chunk. Each point contains:
+- The chunk’s stable `point_id`.
+- Both its `dense` and `sparse vectors`.
+- The chunk’s other fields as `payload`, excluding `point_id`.
+It then sends the points to Qdrant and waits for the write to finish.
+
+`delete_document()` deletes every point whose `document_id` matches the supplied `ID`. This is how the ingestion code can remove old chunks before updating a document.
+
+`list_documents()` repeatedly scrolls through points in batches of 256, reading only `document_id` and `source`. It returns a dictionary mapping each document ID to its filename.
+
+**Filters**
+
+`build_filter()` turns a dictionary into a Qdrant filter:
+
+```python
+{"source": "guide.pdf", "document_id": ["abc", "xyz"]}
+```
+
+Values that are lists, tuples, or sets become “match any” conditions. Other values become exact-value matches. Since all conditions are placed in `must`, different filter fields must all match; the multiple values for one field can match any of those values.
+
+The fields need to exist in the stored payload. This code creates indexes for `document_id` and `source`; other fields can be filtered too, but would need appropriate indexes for efficient filtering at scale.
+
+**Searching**
+
+`search()` accepts a mode, vectors, result limit, optional filters, and optional score `threshold`.
+- `"dense"` searches the `"dense"` vector using semantic similarity. It applies both the filter and score_threshold.
+- `"sparse"` searches the `"bm25"` vector for keyword matches. It applies the filter.
+- `"hybrid"` runs both searches as prefetches, asks Qdrant to combine their rankings with Reciprocal Rank Fusion (RRF), then returns the top results.
+
+In `hybrid mode`, each search fetches up to twice the requested result count before fusion. The filter is applied to both prefetches. In this code, `score_threshold` is only passed to dense mode.
+
+If the mode is unknown, the method raises `RetrievalError`. Other search exceptions are wrapped in `RetrievalError` with a Qdrant failure message.
+
+Finally, each returned point becomes a `RetrievedChunk`: its Qdrant ID and score are combined with available payload fields listed in `PAYLOAD_FIELDS`.
+
+A practical check before calling `search()` is that the vector required by the chosen mode is present: dense mode needs `dense_vec`, sparse mode needs `sparse_vec`, and hybrid mode needs both.
+
+---
