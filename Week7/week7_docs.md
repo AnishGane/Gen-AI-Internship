@@ -568,4 +568,266 @@ Unanswerable questions are skipped because this code evaluates whether search fi
 
 ---
 
+*6.* `answer_generator.py`:
 
+This is the answer-generation stage of the RAG system. It takes retrieved context and a question, asks the LLM for a structured answer with citations, checks that the answer’s citation IDs are valid, and abstains if it can’t produce a verifiable answer.
+
+**Imports and answer format**
+
+- `BuiltContext` represents the retrieved context, including its text, sources, and source IDs. `LLMService` sends the prompt to your model. `Answer` is a Pydantic model that defines the expected response fields. `OutputValidationError` reports malformed output or invalid citations.
+- The system prompt tells the model to use evidence from source tags, treat source text as untrusted data, cite factual claims, and report when evidence is insufficient. It asks for JSON shaped like:
+
+```python
+{
+  "answer": "The answer text [S1].",
+  "citations": ["S1"],
+  "confidence": "high",
+  "insufficient_evidence": false
+}
+```
+
+**The abstention response**
+
+```python
+ABSTAIN = Answer(
+    answer="I don't have enough information in the provided documents to answer this.",
+    citations=[],
+    confidence="high",
+    insufficient_evidence=True,
+)
+```
+
+This is the standard response when no evidence is retrieved, or when two attempts fail validation.
+
+**Parsing and validating the model’s JSON**
+
+- `_parse(raw)` extracts a JSON object from the model’s text, loads it, and uses `Answer` to check that the fields and values have the expected types. If parsing or validation fails, it raises `OutputValidationError`.
+
+**Generating the answer**
+
+`generate()` receives:
+- `question`: the user’s question
+- `ctx`: retrieved context
+- `history_text`: optional conversation history
+If `ctx.sources` is empty, it returns the abstention response without calling the LLM.
+
+Otherwise, it sends the `history`, `context`, and `question` to the model. It allows two attempts. For each response, it:
+1. Parses the JSON into an Answer.
+2. Checks that every cited ID exists in ctx.source_ids.
+3. Rejects a substantive answer that has no citations.
+4. Returns the answer if those checks pass.
+If validation fails, it logs the error and asks the model to correct its JSON, including the valid source IDs. If the second response is still invalid, it returns a fallback abstention message.
+
+The citation check confirms that an ID exists; it does not confirm that the cited source actually supports the claim. The prompt asks the model to make that connection, but this code doesn’t independently verify it.
+
+---
+
+*7.* `context_builder.py`:
+
+This is the **context-building stage**: it cleans up retrieved chunks, optionally shortens them, fits them into a token budget, orders them, and labels them so the answer generator can cite them as `[S1]`, `[S2]`, and so on.
+
+**Token estimates and text matching**
+
+```python
+def approx_tokens(text: str) -> int:
+    return max(1, len(text) // 4)
+```
+
+This estimates token count as roughly one token per four characters. It’s a quick estimate, not an exact tokenizer count. The `max(1, ...)` means even empty text is charged at least one token.
+
+```python
+def _tokens(text: str) -> set[str]:
+    return set(re.findall(r"\w+", text.lower()))
+```
+
+This lowercases text, extracts word-like pieces, and returns unique terms. These sets are used for duplicate detection and simple compression.
+
+**Remove similar chunks**
+
+- `dedupe()` walks through the chunks and keeps a chunk unless it is too similar to one already kept, or has the same `point_id`.
+
+- Similarity is measured with **Jaccard similarity:**
+
+> shared unique terms ÷ all unique terms across both chunks
+
+The default threshold is `0.85`, so chunks must share a large proportion of their terms to be treated as duplicates. Since it compares sets, repeated words don’t affect the score.
+
+**Optional extractive compression**
+
+- `compress()` splits a chunk into sentences, then keeps sentences sharing terms with the query. It removes a few common words from the query first.
+- It only uses the shortened version when at least min_keep sentences match; the default is two. Otherwise, it returns the original chunk.
+- This is a simple keyword technique. It may miss useful sentences that use synonyms, and it may keep a sentence that shares a query word without answering the question.
+
+**BuiltContext**
+
+```python
+@dataclass
+class BuiltContext:
+    text: str
+    sources: dict[str, RetrievedChunk] = field(default_factory=dict)
+```
+
+- `text` is the assembled context sent to the LLM. `sources` maps citation IDs, such as `"S1"`, back to the retrieved chunks that produced them.
+- The `source_ids` property returns the set of those IDs. The answer generator uses it to check that the model’s citations refer to real sources.
+
+**ContextBuilder.build()**
+
+The builder processes chunks in this order:
+1. Deduplicate them.
+2. Optionally compress each chunk.
+3. Apply the token budget. Each chunk costs the estimated body tokens plus 20 tokens for its labels and formatting. Chunks that don’t fit are skipped.
+4. Order the selected chunks.
+5. Assign source IDs and assemble the labelled context.
+
+The `order` setting controls step 4:
+- `"score"` keeps the input order, which the code assumes is best score first.
+- `"document"` sorts by document ID and chunk index, which is useful for reading nearby chunks in sequence.
+- `edges"` puts alternating chunks toward the beginning and end, aiming to place strong evidence away from the middle of a long context.
+
+Source IDs are assigned after ordering, so `[S1]` matches the first source in the final context.
+
+---
+
+*8.* `chunking.py`:
+
+Code in this file splits long documents into chunks using three approaches:
+- `Fixed`: cuts text at regular character intervals.
+- `Recursive`: tries to split at paragraph or sentence boundaries before falling back to fixed cuts.
+- `Structure-aware`: splits Markdown into heading sections, then recursively chunks each section while keeping its heading.
+The returned chunks are text strings, or `(section_heading, chunk_text)` pairs.
+
+**Fixed chunking**
+
+```python
+def fixed_chunk(text: str, size: int = 800, overlap: int = 100) -> list[str]:
+```
+
+- `size` is the maximum slice length in characters. `overlap` is how many characters successive chunks share. The step is `size - overlap`, so the next chunk starts before the previous one ends. The `.strip()` calls remove surrounding whitespace, and empty chunks are skipped.
+- For example, with a size of 800 and overlap of 100, each chunk starts 700 characters after the previous one.
+
+**Recursive chunking**
+
+```python
+def recursive_chunk(
+    text: str,
+    size: int = 800,
+    overlap: int = 100,
+    seps: tuple[str, ...] = ("\n\n", "\n", ". ", " "),
+) -> list[str]:
+```
+
+- If the text already fits, it returns it as one chunk. Otherwise, it picks the first separator found, in this order:
+1. Paragraph break ("\n\n")
+2. Line break ("\n")
+3. Sentence boundary (". ")
+4. Space (" ")
+- It joins smaller pieces until adding another would exceed `size`. At that point it saves the current chunk and carries the last `overlap` characters into the next one. If a single piece is still too large, it tries the remaining separators; when there are none, it falls back to fixed chunking.
+- The goal is to keep chunks near the requested size while avoiding cuts in the middle of paragraphs or sentences where possible.
+
+**Markdown sections**
+
+```python
+def markdown_sections(text: str) -> list[tuple[str | None, str]]:
+```
+
+- This looks for Markdown headings from `#` through `######`. It returns each section as `(heading, body)`. Text before the first heading gets `None` as its heading. If there are no headings, the whole document is returned as one section.
+
+The regular expression in your pasted code has formatting artifacts. In the Python file it should be:
+
+```python
+parts = re.split(r"(?m)^(#{1,6}\s+.+)$", text)
+```
+
+**chunk_text()**
+
+This is the main function that selects a strategy:
+- `"fixed"` calls `fixed_chunk()`.
+- `"structure"` splits by Markdown headings, recursively chunks each section, and adds that section’s heading to each chunk.
+- Any other value uses recursive chunking.
+In structure mode, the heading helps preserve context—for instance, a chunk containing a definition still carries the heading that tells you which topic it belongs to.
+
+---
+
+*9.* `document_loader.py`:
+
+This loader accepts `.txt`, `.md`, and `.pdf` files and turns them into a list of `Page` records. A PDF gets one record per page; a text or Markdown file gets one record for the whole file.
+
+**Page**
+
+```python
+@dataclass
+class Page:
+    text: str
+    page: int | None
+    source: str
+```
+
+- Each record stores the extracted text, its page number if available, and the source filename. For text and Markdown files, `page` is `None`.
+
+`validate_file()`
+
+Before loading, it checks that:
+- The path exists.
+- The file extension is allowed.
+- The file is no larger than the configured max_upload_mb limit.
+It raises `IngestionError` with a message if a check fails.
+
+One useful addition would be checking `path.is_file()` too. As written, an existing directory with an allowed-looking name could pass these checks, then fail when the loader tries to read it.
+
+`load_document()`
+
+- The function converts the input to a `Path` and validates it first.
+- For PDFs, it imports `PdfReader` and extracts text page by page. Page numbering starts at 1. If a PDF page has no extractable text, it gets an empty string.
+- For `.txt` and `.md` files, it reads the entire file as UTF-8. `errors="ignore"` skips bytes that aren’t valid UTF-8 instead of raising a decoding error.
+- Finally, it removes records whose text is empty or whitespace. If no readable text remains, it raises `IngestionError`; otherwise, it returns the records.
+
+---
+
+*10.* `document_processor.py`:
+
+- It takes one document, splits it into chunks, creates embeddings, and stores the chunks in your vector store. It aims to make re-ingesting the same document safe by assigning stable IDs and deleting the document’s old chunks before inserting the new ones.
+
+**Stable IDs**
+
+```python
+def document_id_for(path: Path) -> str:
+    return hashlib.sha1(path.name.encode()).hexdigest()[:12]
+```
+
+This creates a `12-character ID from the filename`. The same filename produces the same ID, which lets the app find and delete that document’s existing chunks.
+- 
+```python
+def point_id_for(document_id: str, chunk_index: int) -> str:
+    return str(uuid.uuid5(NS, f"{document_id}:{chunk_index}"))
+```
+
+- This creates a repeatable `UUID` for each document-and-chunk-index pair. If a document is split the same way again, the corresponding chunks get the same point IDs. Qdrant accepts `UUIDs` as point IDs.
+
+`DocumentProcessor`
+
+- The constructor receives a VectorStore and a chunking strategy, defaulting to "recursive".
+
+- `ingest()` does the following:
+    1. Converts the input into a `Path` and loads its pages.
+    2. Creates a document ID.
+    3. Chunks each page using the configured size, overlap, and strategy.
+    4. Creates a Chunk for every text piece, recording its point ID, document ID, source name, chunk index, page, section, and text.
+    5. Gets the embedding service and generates dense and sparse embeddings for the chunk texts.
+    6. Ensures the Qdrant collection exists.
+    7. Deletes the old chunks for that document, then upserts the newly built chunks and embeddings.
+    8. Logs the result and returns the document ID, filename, and number of chunks.
+- The pasted `chunk_id` expression appears corrupted by formatting. It likely should be:
+
+```python
+chunk_id=f"{doc_id}-{idx:04d}"
+```
+
+That formats the index with leading zeroes, such as `abc123-0007`.
+
+*Deleting a document*
+
+```python
+def delete(self, document_id: str) -> None:
+```
+
+---
