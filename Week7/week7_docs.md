@@ -1049,3 +1049,13 @@ If `queries` is a string, it wraps it in a list. Then it selects the search func
 It runs the selected function for each query. With one query, it returns that result list directly. With multiple queries, it intends to merge them with RRF and return the top k chunks.
 
 ---
+
+**Run**
+
+```bash
+#ingestion
+uv run python -m Week7.app ingest Week7/docs_sample/policy.md
+
+#ask
+uv run python -m Week7.app ask "What is the refund window for annual plans?"
+```
