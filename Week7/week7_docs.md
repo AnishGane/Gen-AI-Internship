@@ -219,49 +219,6 @@ These metrics assess different failure points. A good answer score alone cannot 
 
 **Deliverable:** A complete Document Intelligence RAG application with ingestion, advanced retrieval, grounded generation, evaluation, and operational logging.
 
-## Recommended project structure
-
-Keep reusable application code separate from daily learning and testing scripts. This is a target structure; add modules as you reach the relevant tasks rather than creating every file on Day 1.
-
-```text
-Week7/
-├── core/
-│   ├── ingestion/
-│   │   ├── document_loader.py
-│   │   ├── document_processor.py
-│   │   └── chunking.py
-│   ├── retrieval/
-│   │   ├── dense_search.py
-│   │   ├── bm25_search.py
-│   │   ├── hybrid_search.py
-│   │   ├── query_rewriter.py
-│   │   └── reranker.py
-│   ├── generation/
-│   │   ├── llm_service.py
-│   │   ├── context_builder.py
-│   │   └── answer_generator.py
-│   ├── evaluation/
-│   │   ├── retrieval_evaluator.py
-│   │   └── answer_evaluator.py
-│   └── rag_service.py
-├── day1/
-├── day2/
-├── day3/
-├── day4/
-├── day5/
-├── day6/
-├── day7/
-├── data/
-│   └── evaluation_dataset.json
-├── tests/
-├── config.py
-├── models.py
-├── exceptions.py
-├── logger.py
-├── .env.example
-└── README.md
-```
-
 ---
 
 **1.** `logger.py`
@@ -1004,6 +961,91 @@ So there are two different “K” ideas:` hybrid_search(..., k=10)` controls th
 
 *15.* `query_writer.py`:
 
+This class uses the LLMService to make follow-up questions easier to search and to generate alternative phrasings for retrieval.
 
+`rewrite()`: *make a follow-up question standalone*
+
+If there’s no conversation history, it returns the question unchanged. Otherwise, it takes the last six messages, formats them with their roles, and asks the LLM to rewrite the latest question as a standalone search query.
+
+For example, given this history:
+
+```text
+User: What is Qdrant?
+Assistant: It is a vector database.
+User: Does it support sparse search?
+```
+
+It might rewrite the last question as:
+
+```text
+Does Qdrant support sparse search?
+```
+
+`.strip()` removes whitespace; `.strip('"')` also removes quote characters at the ends. If the model returns an empty response, the original question is used.
+
+`expand()`: *generate alternative search queries*
+
+This asks the LLM for a JSON array of differently worded queries. It extracts the text between the first `[` and last `]`, parses it as `JSON`, then returns the original question plus generated queries that are strings.
+
+For example:
+
+```text
+["How does Qdrant sparse search work?",
+ "How are sparse vectors used for keyword retrieval?"]
+```
+
+---
+
+*16.* `reranker.py`:
+
+This is a **second-stage retrieval step**. Your vector search first finds candidate chunks; the reranker then scores each candidate against the original question and sorts them by likely relevance.
+
+**Load and reuse the reranker model**
+
+```python
+@lru_cache(maxsize=1)
+def _model():
+    from fastembed.rerank.cross_encoder import TextCrossEncoder
+    return TextCrossEncoder(settings.rerank_model)
+```
+
+`_model()` loads the configured cross-encoder. The cache keeps one instance, so repeated reranking calls don’t reload the model each time. The FastEmbed import is inside the function, so it happens when the model is first needed.
+
+A cross-encoder looks at the query and a chunk together to score their relevance. This can provide better ordering than the initial search, though it takes more work per candidate. That’s why it’s typically used to rerank a limited set of retrieved chunks.
+
+**Rerank candidates**
+
+```python
+def rerank(self, query, chunks, top_n=5, min_score=None):
+```
+
+If there are no chunks, it returns an empty list. Otherwise, it:
+1. Sends the query and each chunk’s text to the cross-encoder.
+2. Copies each chunk and attaches its reranking score as rerank_score.
+3. Sorts chunks from highest score to lowest.
+4. Optionally removes scores below min_score.
+5. Returns up to `top_n` chunks.
+
+Check that your `RetrievedChunk` model supports a `rerank_score` field. Also, reranker scores are model-specific relevance scores; don’t assume they’re probabilities or automatically use a universal threshold.
+
+**Compare rankings**
+
+`compare_orders(before, after)` helps inspect how results moved. For each reranked chunk, it returns its chunk_id, its original position, and its new position. It uses `-1` when a chunk ID wasn’t present in the original list.
+
+The score list and chunk list are paired with `zip()`, which silently truncates if their lengths differ.
+
+---
+
+*17.* `retriever.py`:
+
+`Retriever` is intended to be the single entry point for retrieval. It takes one query or several, selects dense, sparse, or hybrid search, applies filters, and combines results when there are multiple queries.
+
+**How `retrieve()` works**
+
+If `queries` is a string, it wraps it in a list. Then it selects the search function for mode:
+- `"dense"` uses semantic vector search and can apply score_threshold.
+- `"sparse"` uses BM25 keyword search.
+- `"hybrid"` combines dense and sparse search inside Qdrant.
+It runs the selected function for each query. With one query, it returns that result list directly. With multiple queries, it intends to merge them with RRF and return the top k chunks.
 
 ---

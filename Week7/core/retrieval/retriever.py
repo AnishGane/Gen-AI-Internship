@@ -16,4 +16,4 @@ class Retriever:
               "sparse": lambda q: bm25_search(self.store, q, k, filters),
               "hybrid": lambda q: hybrid_search(self.store, q, k, filters)}[mode]
         results = [fn(q) for q in queries]
-        return results[0] if len(results) == 1 else rrf_merge(results, top=k)
+        return results[0] if len(results) == 1 else rrf_merge(*results, top=k)
