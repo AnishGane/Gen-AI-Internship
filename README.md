@@ -110,6 +110,19 @@ uv run Week1/day1/01_lists.py
 | Day 5 | Dataset Evaluation, compare search                                          | `13_evaluation_dataset.py`, `14_evaluate_search.py`, `15_compare_search.py`          | [Go to Day5](./Week6/day5/) |
 | Day 6 | Final Vector Database App & Vector Search App                               | `16_vector_search_app.py`, `17_interactive_search.py`, `18_final_vector_database.py` | [Go to Day6](./Week6/day6/) |
 
+---
+
+## Week 7 
+
+| Day   | Topics Covered                                                              | Files                                                                                | Link                        |
+| ----- | --------------------------------------------------------------------------- | ------------------------------------------------------------------------------------ | --------------------------- |
+| Day 1 | RAG Project Setup, Configuration, Document Loading & Processing           | `config.py`, `document_loader.py`, `document_processor.py`    | [Go to file](./Week7/core/ingestion) |
+| Day 2 | Document Chunking, Embedding Generation & Vector Storage           | `chunking.py`, `embeddings.py`, `vector_store.py`    | - |
+| Day 3 | Retrieval Pipeline, Vector Search & RAG Service           | `retrieval/`, `rag_service.py`    | - |
+| Day 4 | Context Building, Prompt Preparation & Answer Generation           | `context_builder.py`, `answer_generator.py`   | - |
+| Day 5 | Retrieval Evaluation & Answer Quality Evaluation           | `retrieval_evaluator.py`, `answer_evaluator.py`   | [Go to file](./Week7/core/evaluation/) |
+| Day 6 | RAG API Development & Application Integration           | `api.py`, `app.py`, `models.py`, `exceptions.py`, `logger.py`   | - |
+
 ## Internship Progress
 
 - **Month 1**
@@ -120,7 +133,7 @@ uv run Week1/day1/01_lists.py
 - **Month 2**
 - [x] Week 5
 - [x] Week 6
-- [ ] Week 7
+- [x] Week 7
 - [ ] Week 8
 - **Month 3**
 - [ ] Week 9
