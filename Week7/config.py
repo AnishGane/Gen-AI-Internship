@@ -51,10 +51,6 @@ class Settings:
         if not self.dense_model:
             raise ConfigError("DENSE_MODEL is required")
 
-    def validate_for_sparse(self) -> None:
-        if not self.sparse_model:
-            raise ConfigError("SPARSE_MODEL is required")
-
     def validate_for_rerank(self) -> None:
         if not self.rerank_model:
             raise ConfigError("RERANK_MODEL is required")

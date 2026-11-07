@@ -6,6 +6,8 @@ from Week7.config import settings
 class EmbeddingService:
     def __init__(self):
         from fastembed import TextEmbedding, SparseTextEmbedding
+
+        settings.validate_for_dense()
         self.dense_embedding = TextEmbedding(settings.dense_model)
         self.sparse_embedding = SparseTextEmbedding("Qdrant/bm25")
 

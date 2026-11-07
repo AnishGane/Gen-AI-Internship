@@ -6,6 +6,8 @@ from Week7.models import RetrievedChunk
 @lru_cache(maxsize=1)
 def _model():
     from fastembed.rerank.cross_encoder import TextCrossEncoder
+
+    settings.validate_for_rerank()
     return TextCrossEncoder(settings.rerank_model)
 
 class Reranker:
