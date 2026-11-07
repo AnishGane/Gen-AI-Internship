@@ -8,7 +8,10 @@ PAYLOAD_FIELDS = ("document_id", "source", "chunk_id", "chunk_index", "page", "s
 
 class VectorStore:
     def __init__(self, client: QdrantClient | None = None, collection: str | None = None):
+        settings.validate_for_qdrant()
         self.client = client or QdrantClient(url=settings.qdrant_url, api_key=settings.qdrant_api_key)
+
+        settings.validate_for_collection()
         self.collection = collection or settings.collection_name
 
     # ---- setup (Day 5: NEW collection with sparse config; reindex from scratch) ----

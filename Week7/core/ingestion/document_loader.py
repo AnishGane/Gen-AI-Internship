@@ -18,6 +18,8 @@ def validate_file(path: Path) -> None:
         raise IngestionError(f"File not found: {path}")
     if path.suffix.lower() not in ALLOWED:
         raise IngestionError(f"Unsupported file type: {path.suffix}")
+    if path.stat().st_size <= 0:
+        settings.validate_for_upload()
     if path.stat().st_size > settings.max_upload_mb * 1024 * 1024:
         raise IngestionError(f"File exceeds {settings.max_upload_mb} MB limit")
 
