@@ -1,0 +1,1 @@
+uv run pytest .\tests\test_qdrant_vectorstore.py -v

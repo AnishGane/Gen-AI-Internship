@@ -31,7 +31,7 @@ def get_llm(temp: float = 0.0, **kwargs: Any) -> ChatOpenRouter:
         max_retries=(
             settings.max_retries
             if settings.max_retries is not None
-            else 2
+            else 3
         ),
         **kwargs
     )
@@ -48,6 +48,12 @@ def get_embeddings() -> Embeddings:
             api_key=settings.openrouter_api_key,
             base_url=settings.openrouter_base_url,
             check_embedding_ctx_length=False,
+            chunk_size=1,
+            max_retries=(
+                settings.max_retries
+                if settings.max_retries is not None
+                else 3
+            ),
         )
 
     elif settings.embedding_provider == "huggingface":
