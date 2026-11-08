@@ -1,0 +1,9 @@
+[
+    {"question": "What is LCEL and why use it?", "route": "knowledge", "expected_source": "langchain_overview", "expected_keywords": ["pipe", "runnable"]},
+    {"question": "How does LangGraph checkpointing work with thread ids?", "route": "knowledge", "expected_source": "langgraph_overview", "expected_keywords": ["thread", "checkpoint"]},
+    {"question": "Why do we rewrite queries in agentic RAG?", "route": "knowledge", "expected_source": "rag_basics", "expected_keywords": ["rewrite", "weak"]},
+    {"question": "Which distance metrics does Qdrant support?", "route": "knowledge", "expected_source": "qdrant_notes", "expected_keywords": ["cosine"]},
+    {"question": "Write me a two line haiku-style greeting for autumn.", "route": "general"},
+    {"question": "What is the warranty period of the Zorblax 9000 blender?", "route": "knowledge", "should_fallback": true}
+  ]
+  
