@@ -1,5 +1,5 @@
 import uuid
-from typing import Literal
+from typing import Literal, TypedDict
 from pydantic import BaseModel, Field, field_validator
 
 class Extracted_info(BaseModel):
@@ -74,3 +74,17 @@ class ChatResponse(BaseModel):
     attempts: int = 0
     rewrites: list[str] = []
     latency_ms: int = 0
+
+# models used in p1 project
+class Triage(BaseModel):
+    category: Literal["billing", "technical", "account", "other"]
+    urgency: Literal["low", "medium", "high"]
+    sentiment: Literal["positive", "neutral", "angry"]
+    refund_requested: bool
+
+class State(TypedDict, total=False):
+    ticket: str
+    triage: dict
+    draft: str
+    final: str
+    sent: bool
