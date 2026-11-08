@@ -3,7 +3,7 @@ from fastapi import APIRouter, HTTPException, Request, Depends
 from Week8.exceptions import ConfigError, RetrievalError
 from Week8.logger import get_logger
 from Week8.models import ChatRequest, ChatResponse, Source
-# from Week8.RAG.workflow import ask
+from Week8.RAG.workflow import ask
 
 log = get_logger("api")
 router = APIRouter()
@@ -20,7 +20,7 @@ def chat(req: ChatRequest, request: Request):
     start = time.perf_counter()
 
     try:
-        # state = ask(graph, req.question, req.thread_id, {"tags": ["week8", "api"]})
+        state = ask(graph, req.question, req.thread_id, {"tags": ["week8", "api"]})
         pass
     except ConfigError as exc:
         raise HTTPException(status_code=500, detail=str(exc)) from exc
