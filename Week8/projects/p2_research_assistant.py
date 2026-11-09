@@ -1,7 +1,8 @@
 """PROJECT 2 - Research assistant with map-reduce (LangGraph Send API).
 
 question -> plan sub-questions -> [parallel: retrieve + summarise each] -> synthesize a cited report
-Run:  python -m projects.p2_research_assistant "Compare LangChain agents and LangGraph workflows"
+
+Run:  uv run .\Week8\projects\p2_research_assistant.py "Compare LangChain agents and LangGraph workflows"
 """
 import operator
 import sys

@@ -2,11 +2,11 @@
 from langchain_core.output_parsers import StrOutputParser
 from Week8.core.llm import get_llm
 from Week8.core.prompts import EXTRACTION_PROMPT
-from Week8.models import ExtractedInfo
+from Week8.models import Extracted_info
 
 def build_extraction_chain():
     """text -> prompt -> model(structured) -> ExtractedInfo (Pydantic-validated)."""
-    structured_llm = get_llm().with_structured_output(ExtractedInfo, method="function_calling")
+    structured_llm = get_llm().with_structured_output(Extracted_info, method="function_calling")
     return EXTRACTION_PROMPT | structured_llm
 
 
