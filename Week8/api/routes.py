@@ -1,5 +1,5 @@
 import time
-from fastapi import APIRouter, HTTPException, Request, Depends
+from fastapi import APIRouter, HTTPException, Request
 from Week8.exceptions import ConfigError, RetrievalError
 from Week8.logger import get_logger
 from Week8.models import ChatRequest, ChatResponse, Source
