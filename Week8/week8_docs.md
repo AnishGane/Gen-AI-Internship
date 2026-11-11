@@ -2,9 +2,7 @@
 
 # Week 8 - Learning Langchain & LangGraph
 
----
-
-**`routes.py`** [Take me there](Week8\api)
+**`routes.py`** [Take me there](api/)
 
 This code defines `FastAPI` endpoints for checking the service, sending a question to a RAG workflow, and retrieving a conversation’s history.
 
@@ -123,7 +121,7 @@ The response includes the thread ID and each message’s type and content:
 
 ---
 
-**`tools.py`** [Take me there](Week8\core)
+**`tools.py`** [Take me there](\core)
 
 This module defines three tools that a LangChain-based assistant can call:
 1. A calculator for arithmetic
@@ -257,7 +255,7 @@ A typical setup binds the tools to a chat model or provides them to an agent. Th
 
 ---
 
-**`agents.py`** [Take me there](Week8\lc)
+**`agents.py`** [Take me there](\lc)
 
 It creates a `LangChain agent` and gives it a `language model`, a set of `tools`, and instructions for choosing when to use those tools.
 
@@ -270,7 +268,7 @@ from Week8.core.tools import calculator, get_current_datetime, search_text
 ```
 
 - `create_agent` builds an agent using LangChain’s agent interface.
-- `get_llm()` returns the language model configured in [llm.py](Week8\core\llm.py).
+- `get_llm()` returns the language model configured in [llm.py](\core\llm.py).
 - The other imports are the `calculator`, `date/time`, and `local document search` tools.
 
 **System prompt**
@@ -378,4 +376,104 @@ agent = build_agent(checkpointer=my_checkpointer)
 ```
 
 The application that calls `build_agent` is responsible for `choosing` and `configuring an in-memory`, `SQLite`, or other checkpointer. It also needs to pass the correct thread identifier when invoking the agent if it expects the conversation to resume.
+
+---
+
+**`chains,py`** [Take me there](\lc)
+
+**Reusable LangChain Chains**
+
+This module defines two reusable chains using `LCEL`, `LangChain’s expression language` for connecting components into a processing pipeline.
+
+The `|` operator passes each component’s output into the next component. For example:
+
+```text
+prompt | model | parser
+```
+
+means: format a prompt, send it to a model, then parse the model’s response.
+
+**Imports**
+
+```python
+from langchain_core.output_parsers import StrOutputParser
+from Week8.core.llm import get_llm
+from Week8.core.prompts import EXTRACTION_PROMPT
+from Week8.models import Extracted_info
+```
+
+- `StrOutputParser` converts a model response into plain text.
+- `get_llm()` returns the configured chat model.
+- `EXTRACTION_PROMPT` provides instructions for extracting information from text.
+- `Extracted_info` is a Pydantic model used to validate structured extraction results.
+
+**Structured extraction chain**
+
+```python
+def build_extraction_chain():
+    """text -> prompt -> model(structured) -> ExtractedInfo (Pydantic-validated)."""
+    structured_llm = get_llm().with_structured_output(
+        Extracted_info,
+        method="function_calling"
+    )
+    return EXTRACTION_PROMPT | structured_llm
+```
+
+This function builds a chain that takes text, asks the model to extract information, and returns the result in the structure defined by `Extracted_info`.
+
+`with_structured_output(...)` configures the model to produce data matching that schema. The `"function_calling"` method asks the model provider to return structured data through its function-calling feature. LangChain then validates the result against the Pydantic model.
+
+The chain is assembled as:
+
+```python
+EXTRACTION_PROMPT → structured model
+```
+
+The chain’s input must match the variables expected by `EXTRACTION_PROMPT`. Its output is typically an `Extracted_info` instance, or a validation/provider error if the output cannot be parsed into the required structure.
+
+**Plain-text chain**
+
+```python
+def build_text_chain(system: str = "You are a concise assistant."):
+```
+
+This function builds a conversational chain that returns plain text. The `system` argument lets the caller customize the assistant’s instructions.
+
+```python
+prompt = ChatPromptTemplate.from_messages([
+    ("system", system),
+    ("human", "{question}")
+])
+```
+
+The prompt has two messages:
+- A system message containing the `system` instructions.
+- A human message whose `{question}` placeholder is filled with the chain’s input.
+
+```python
+return prompt | get_llm(temp=0.3) | StrOutputParser()
+```
+
+The chain runs through three steps:
+1. `Prompt`: Combines the system instructions with the supplied question.
+2. `Model`: Generates a response using the configured language model at temperature 0.3.
+3. `Parser`: Converts the model output into a plain Python string.
+
+For example, a caller might invoke the chain with:
+
+```python
+chain.invoke({"question": "Explain retrieval-augmented generation."})
+```
+
+The result is a string containing the model’s answer. Since the output parser handles chunks as text, this chain can also be used in streaming demos.
+
+**Summary**
+
+| Chain | Input | Processing | Output |
+|---|---|---|---|
+| `build_extraction_chain()` | Values required by `EXTRACTION_PROMPT` | Prompt → structured model output | Pydantic-validated `Extracted_info` |
+| `build_text_chain(system)` | A `question` string in a dictionary | Prompt → model → string parser | Plain-text string |
+
+The functions return configured chains; they do not run them. A caller runs a chain with methods such as `.invoke(...)` or `.stream(...)`.
+
 ---
