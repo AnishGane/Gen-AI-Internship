@@ -1,9 +1,7 @@
 """Step 1: the tool cycle written out by hand (mirrors the Week 9 handout).
 
-One tool, one request, one result, one final answer. Every stage is printed
-so you can fill in the trace in notes/learning_notes.md.
+One tool, one request, one result, one final answer. 
 
-Run:  python -m scripts.step1_basic_cycle
 """
 from Week9.agent.client import chat, make_client
 from Week9.agent.models import pick_models
