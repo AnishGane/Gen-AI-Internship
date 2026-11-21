@@ -11,7 +11,20 @@ wheels/
 
 *.env
 storage/
-*.log
 
 .pytest_cache/
 .ruff_cache/
+
+diff --git a/.gitignore b/.gitignore
+index a18853b..086eee6 100644
+--- a/.gitignore
++++ b/.gitignore
+@@ -14,4 +14,6 @@ storage/
+ *.log
+ 
+ .pytest_cache/
+-.ruff_cache/
+\ No newline at end of file
++.ruff_cache/
++# Week11 quality lab: raw runs may contain model answers/traces
++Week11/week11-quality-lab/results/runs/

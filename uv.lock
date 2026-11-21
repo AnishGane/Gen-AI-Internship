@@ -597,6 +597,15 @@ wheels = [
 ]
 
 [[package]]
+name = "eval"
+version = "0.0.5"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/33/0c/03fd95212dbc0446a2aea1a1f245b61d2d3390f2417ea0969c157a31be03/eval-0.0.5.tar.gz", hash = "sha256:e13bf4181cdf06cadb9d507bcb40aef426849b2949f82e92dfc9926c8600b78e", size = 3588, upload-time = "2019-10-31T00:30:49.98Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/35/92/85bd70702398dd0491ae0b365d86be0c4f66787689c6c2c04fee6677a81d/eval-0.0.5-py2.py3-none-any.whl", hash = "sha256:f8e6d7b89f073989b120b75c82b9f4735e4e563f9e33b3598b87035952f6a79c", size = 3830, upload-time = "2019-07-06T00:17:56.066Z" },
+]
+
+[[package]]
 name = "fastapi"
 version = "0.162.0"
 source = { registry = "https://pypi.org/simple" }
@@ -772,6 +781,7 @@ version = "0.1.0"
 source = { editable = "." }
 dependencies = [
     { name = "chromadb" },
+    { name = "eval" },
     { name = "fastapi" },
     { name = "fastembed" },
     { name = "httpx" },
@@ -805,6 +815,7 @@ dependencies = [
 [package.metadata]
 requires-dist = [
     { name = "chromadb", specifier = ">=1.5.9" },
+    { name = "eval", specifier = ">=0.0.5" },
     { name = "fastapi", specifier = ">=0.162.0" },
     { name = "fastembed", specifier = ">=0.9.1" },
     { name = "httpx", specifier = ">=0.28.1" },
