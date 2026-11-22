@@ -48,7 +48,7 @@ def run_probes(runner, probes:list[dict], retries: int = 2, log=print) -> list[d
     rows = []
     for probe in probes:
         result = call_with_retry(
-            runner, retries, question = probes["question"], inject_chunk=probe.get("inject_chunk"), case_id=probe["id"]
+            runner, retries, question = probe["question"], inject_chunk=probe.get("inject_chunk"), case_id=probe["id"]
         )
         verdict = check_probe(probe, result)
         rows.append({
@@ -58,3 +58,54 @@ def run_probes(runner, probes:list[dict], retries: int = 2, log=print) -> list[d
         })
         log(f"  {probe['id']:9s} {verdict['outcome'].upper():6s} {probe['attack']}")
     return rows
+
+def summarize(rows: list[dict], probes: list[dict], code_checks: list[dict]) -> dict:
+    def rate(check: str) -> dict:
+        values = [row["checks"][check] for row in rows if row["checks"].get(check) is not None]
+        return {"passed": sum(values), "total": len(values)}
+
+    errors = sum(bool(row["error"]) for row in rows)
+    latencies = [row["latency_s"] for row in rows if not row["error"]]
+    judged = [row["judge_faithful"] for row in rows if row.get("judge_faithful") is not None]
+    by_category: dict[str, dict] = {}
+    for row in rows:
+        category = row["category"] or "?"
+        group = by_category.setdefault(category, {"passed": 0, "total": 0})
+        group["total"] += 1
+        group["passed"] += row["passed"]
+
+    return {
+        "cases": len(rows), "errors": errors, "explicit_pass": sum(row["passed"] for row in rows),
+        "checks": {name: rate(name) for name in (
+            "route_ok", "status_ok", "contains_ok", "retrieval_hit", "citation_hit", "no_sources", "grounded"
+        )},
+        "by_category": by_category,
+        "median_latency_s": round(statistics.median(latencies), 2) if latencies else None,
+        "judge_faithful": {"passed": sum(judged), "total": len(judged)} if judged else None,
+        "security_llm": {outcome: sum(probe["outcome"] == outcome for probe in probes)
+                         for outcome in ("held", "failed", "error")},
+        "security_code": {outcome: sum(check["outcome"] == outcome for check in code_checks)
+                          for outcome in ("held", "failed", "skipped")},
+    }
+
+def build_meta(variant: str, info: dict, mock: bool, cases_path, probes_path) -> dict:
+    model = info.get("model_id", "mock")
+    return {
+        "variant": variant, "variant_label": VARIANTS[variant]["label"],
+        "date_utc": datetime.now(timezone.utc).isoformat(timespec="seconds"), "git_sha": git_sha(),
+        "app": "Week 10 agentic RAG (LangGraph, adaptive=True)",
+        "prompt_version": "Week10/core/prompts.py @ git_sha (unchanged between variants)",
+        "model_id": model, "model_is_moving_target": model == "openrouter/free",
+        "cases_sha": file_sha(cases_path), "probes_sha": file_sha(probes_path), "mock": mock, **info,
+    }
+
+def save(run: dict, mock: bool) -> object:
+    RUNS_DIR.mkdir(parents=True, exist_ok=True)
+    stamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
+    raw_path = RUNS_DIR / f"{'mock_' if mock else ''}{run['meta']['variant']}_{stamp}.json"
+    raw_path.write_text(json.dumps(run, indent=2, ensure_ascii=False), encoding="utf-8")
+    if not mock:
+        RESULTS_DIR.mkdir(parents=True, exist_ok=True)
+        latest = RESULTS_DIR / f"latest_{run['meta']['variant']}.json"
+        latest.write_text(json.dumps(run, indent=2, ensure_ascii=False), encoding="utf-8")
+    return raw_path
