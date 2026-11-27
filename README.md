@@ -123,6 +123,58 @@ uv run Week1/day1/01_lists.py
 | Day 5 | Retrieval Evaluation & Answer Quality Evaluation           | `retrieval_evaluator.py`, `answer_evaluator.py`   | [Go to file](./Week7/core/evaluation/) |
 | Day 6 | RAG API Development & Application Integration           | `api.py`, `app.py`, `models.py`, `exceptions.py`, `logger.py`   | - |
 
+---
+
+## Week 8
+
+| Day | Topics Covered | Files | Link |
+| --- | --- | --- | --- |
+| Day 1 | Document handling and preparation | `core/documents.py` | [Go to core](./Week8/core/) |
+| Day 2 | Embedding generation and vector storage | `core/embeddings.py`, `core/vector_store.py` | [Go to core](./Week8/core/) |
+| Day 3 | Pipeline integration and application setup | `core/pipeline.py`, `app.py`, `config.py`, `models.py` | [Go to Week8](./Week8/) |
+| Day 4 | Dependencies and project documentation | `requirements.txt`, `week8_docs.md` | [Go to Week8](./Week8/) |
+
+---
+
+## Week 9
+
+| Day | Topics Covered | Files | Link |
+| --- | --- | --- | --- |
+| Day 1 | Agent project setup, configuration, client and data models | `agent/config.py`, `agent/client.py`, `agent/models.py` | [Go to agent](./Week9/agent/) |
+| Day 2 | Listing available free models and running a basic agent cycle | `scripts/list_free_models.py`, `scripts/step1_basic_cycle.py` | [Go to scripts](./Week9/scripts/) |
+| Day 3 | Building the agent loop and managing repeated steps | `agent/loop.py`, `scripts/step2_agent_loop.py` | [Go to scripts](./Week9/scripts/) |
+| Day 4 | Defining tools and connecting tools to the agent | `agent/tools.py`, `scripts/step3_tool_or_not.py` | [Go to agent](./Week9/agent/) |
+| Day 5 | Deciding when to use a tool and validating tool behavior | `agent/tools.py`, `tests/test_tools.py`, `tests/__init__.py` | [Go to tests](./Week9/tests/) |
+| Day 6 | Integrating and reviewing the complete agent workflow | `agent/`, `scripts/`, `tests/`, `week9_docs.md` | [Go to Week9](./Week9/) |
+
+---
+
+## Week 10
+
+| Day | Topics Covered | Files | Link |
+| --- | --- | --- | --- |
+| Day 1 | LangChain setup, prompts, structured outputs and LCEL chains | `tasks/01_langchain_setup.py`, `tasks/02_prompts_and_structured_outputs.py`, `tasks/03_lcel_chains.py`, `core/llm.py`, `core/prompts.py`, `lc/chains.py` | [Go to tasks](./Week10/tasks/) |
+| Day 2 | Custom tools, tool calling agents and LangChain retrieval | `tasks/04_custom_tools.py`, `tasks/05_tool_calling_agent.py`, `tasks/06_langchain_retrieval.py`, `core/tools.py`, `lc/agents.py`, `lc/retrieval.py` | [Go to tasks](./Week10/tasks/) |
+| Day 3 | LangGraph basics, nodes, edges and conditional workflows | `tasks/07_langgraph_basics.py`, `tasks/08_nodes_and_edges.py`, `tasks/09_conditional_workflow.py`, `lg/memory.py` | [Go to tasks](./Week10/tasks/) |
+| Day 4 | Graph checkpointing, memory, human review and advanced workflows | `tasks/10_checkpointing_and_memory.py`, `tasks/11_human_in_the_loop.py`, `tasks/12_advanced_graph_workflows.py`, `lg/` | [Go to tasks](./Week10/tasks/) |
+| Day 5 | Agentic RAG and adaptive retrieval | `tasks/13_agentic_rag.py`, `tasks/14_adaptive_retrieval.py`, `RAG/`, `data/sample_docs/` | [Go to RAG](./Week10/RAG/) |
+| Day 6 | RAG API, evaluation, tests and applied projects | `tasks/15_rag_api_and_evaluation.py`, `api/routes.py`, `app.py`, `data/eval_set.json`, `tests/`, `projects/` | [Go to Week10](./Week10/) |
+
+---
+
+## Week 11
+
+| Day | Topics Covered | Files | Link |
+| --- | --- | --- | --- |
+| Day 1 | Quality lab setup, configuration and evaluation data loading | `quality_lab/config.py`, `quality_lab/data.py`, `data/eval_cases.jsonl` | [Go to quality lab](./Week11/quality_lab/) |
+| Day 2 | Running evaluations and scoring model outputs | `quality_lab/runner.py`, `quality_lab/evaluation.py`, `quality_lab/scoring.py`, `eval.py` | [Go to quality lab](./Week11/quality_lab/) |
+| Day 3 | LLM-as-judge evaluation and quality criteria | `quality_lab/judge.py`, `quality_lab/evaluation.py` | [Go to quality lab](./Week11/quality_lab/) |
+| Day 4 | Security probes and evaluation test coverage | `quality_lab/security.py`, `data/security_probes.jsonl`, `tests/test_eval.py`, `conftest.py` | [Go to tests](./Week11/tests/) |
+| Day 5 | CLI workflow, run results and comparison reporting | `quality_lab/cli.py`, `quality_lab/reporting.py`, `results/runs/`, `results/comparison.md` | [Go to results](./Week11/results/) |
+| Day 6 | Complete quality lab run, latest reports and project documentation | `quality_lab/`, `results/latest_baseline.json`, `results/latest_changed.json`, `results/report.md`, `week11_docs.md` | [Go to Week11](./Week11/) |
+
+---
+
 ## Internship Progress
 
 - **Month 1**
@@ -134,14 +186,14 @@ uv run Week1/day1/01_lists.py
 - [x] Week 5
 - [x] Week 6
 - [x] Week 7
-- [ ] Week 8
+- [x] Week 8
 - **Month 3**
-- [ ] Week 9
-- [ ] Week 10
-- [ ] Week 11
+- [x] Week 9
+- [x] Week 10
+- [x] Week 11
 - [ ] Week 12
 
 ---
 
-Owner - AnishGane <br />
+Owner - AnishGane
 email- [anishgane10@gmail.com](mailto:anishgane10@gmail.com)
